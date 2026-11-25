@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Inside an artificial neuron · Will this Aurora guest come back?</title>
+<style>
+:root{--navy:#20364c;--blue:#315575;--red:#8b1e2d;--green:#2f7d4a;--amber:#b7791f;--grey:#64748b;--line:#cbd5df;--bg:#f7f8fa;--up:#2f7d4a;--down:#b83b3b}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--navy);font:clamp(15px,1.05vw,21px)/1.35 Arial,Helvetica,sans-serif}
+main{max-width:1800px;margin:auto;padding:1.1em 2.2vw 1em}
+header{display:flex;justify-content:space-between;align-items:flex-end;gap:1em;border-bottom:2px solid var(--blue);padding-bottom:.6em}
+.kicker{color:var(--grey);font-size:.78em;letter-spacing:.06em;text-transform:uppercase}
+h1{font-size:clamp(24px,2.3vw,46px);margin:.15em 0 .1em;line-height:1.1}
+.question{font-size:1.15em;color:var(--red);font-style:italic}
+.hbtn{display:flex;gap:.4em;flex-shrink:0}
+button,select{font:inherit;font-size:.9em;padding:.45em .8em;border:1px solid #9baebe;border-radius:7px;background:#fff;color:var(--navy);cursor:pointer}
+button:hover{background:#e5edf4}
+button.on{background:var(--blue);color:#fff;border-color:var(--blue)}
+.layout{display:grid;grid-template-columns:minmax(330px,0.95fr) 1.55fr;gap:1.1em;margin-top:.9em}
+.panel{background:#fff;border:1px solid var(--line);border-radius:12px;padding:.85em 1.1em}
+h2{font-size:1.05em;margin:0 0 .5em;display:flex;align-items:center;gap:.45em}
+h2 .n{display:inline-grid;place-items:center;width:1.6em;height:1.6em;border-radius:50%;background:var(--blue);color:#fff;font-size:.85em}
+.personas{display:grid;grid-template-columns:1fr 1fr;gap:.4em;margin-bottom:.5em}
+.personas button{text-align:left;font-size:.82em;line-height:1.2;padding:.4em .6em}
+.personas button b{display:block;font-size:1.05em}
+.ctl{margin:.3em 0 0}
+.ctl .top{display:flex;justify-content:space-between;align-items:baseline;gap:.5em}
+.ctl .name{font-weight:bold}
+.ctl .val{font-weight:bold;font-size:1.1em;white-space:nowrap}
+.ctl .hint{font-size:.78em;color:var(--grey)}
+input[type=range]{width:100%;accent-color:var(--blue);height:1.3em;margin:0}
+.w input[type=range]{accent-color:var(--red)}
+.sep{border-top:1px dashed var(--line);margin:.45em 0 .35em}
+.row{display:flex;gap:.5em;align-items:center;flex-wrap:wrap}
+.row select{flex:1}
+.actdesc{font-size:.82em;color:#475569;margin:.3em 0 .2em;min-height:2.4em}
+.right{display:grid;gap:1.1em;align-content:start}
+svg{width:100%;display:block}
+.out{display:grid;grid-template-columns:1.25fr 1fr;gap:1.1em;align-items:stretch}
+.verdict{border-radius:10px;padding:.7em 1em;color:#fff;display:flex;flex-direction:column;justify-content:center}
+.verdict .big{font-size:3em;font-weight:bold;line-height:1}
+.verdict .lab{font-size:1.15em;font-weight:bold;margin-top:.15em}
+.verdict .act{font-size:.88em;margin-top:.35em;opacity:.95}
+.story{font-size:.95em;background:#f1f5f9;border-left:4px solid var(--blue);padding:.5em .8em;border-radius:0 8px 8px 0;margin:.6em 0 0}
+.warn{margin-top:.5em;background:#fff4e5;border-left:4px solid var(--amber);padding:.45em .8em;border-radius:0 8px 8px 0;font-size:.92em}.warn:empty{display:none}.dirok{color:var(--green);font-weight:bold}.dirbad{color:var(--amber);font-weight:bold}.story .nw{white-space:nowrap}.story b.up{color:var(--up)}.story b.down{color:var(--down)}
+.legend{font-size:.78em;color:var(--grey);display:flex;gap:1.2em;flex-wrap:wrap;margin-top:.3em}
+.legend i{display:inline-block;width:.9em;height:.9em;border-radius:2px;vertical-align:-.1em;margin-right:.3em}
+footer{margin-top:.7em;color:#526577;font-size:.75em}
+@media(max-width:950px){.layout,.out{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<main>
+<header>
+  <div>
+    <div class="kicker">Interactive demonstration · Aurora Hotels</div>
+    <h1>Inside an artificial neuron</h1>
+    <div class="question">Will this guest come back to an Aurora hotel within 12 months?</div>
+  </div>
+  <div class="hbtn"><button id="fitted" title="Weights estimated from 5,000 Aurora guests">Aurora-fitted weights</button><button id="full">Full screen</button></div>
+</header>
+
+<div class="layout">
+  <!-- LEFT: controls -->
+  <section class="panel">
+    <h2><span class="n">1</span>Choose a guest (inputs)</h2>
+    <div class="personas" id="personas"></div>
+    <div id="inputs"></div>
+    <div class="sep"></div>
+    <h2><span class="n">2</span>Tune the neuron (parameters)</h2>
+    <div id="params" class="w"></div>
+    <div class="sep"></div>
+    <h2><span class="n">3</span>Activation function</h2>
+    <div class="row"><select id="fn"><option>Sigmoid</option><option>ReLU</option><option>Tanh</option><option>GELU</option><option>SiLU</option><option>Linear</option></select></div>
+    <p class="actdesc" id="actdesc"></p>
+  </section>
+
+  <!-- RIGHT: neuron + output -->
+  <section class="right">
+    <div class="panel">
+      <h2><span class="n">4</span>What happens inside: forward propagation</h2>
+      <svg id="diagram" viewBox="0 0 900 235" aria-label="Neuron diagram"></svg>
+      <div class="story" id="story"></div>
+      <div class="warn" id="warn"></div>
+    </div>
+    <div class="panel">
+      <h2><span class="n">5</span>What the output means</h2>
+      <div class="out">
+        <div>
+          <svg id="gauge" viewBox="0 0 520 150" aria-label="Probability gauge"></svg>
+          <div class="legend"><span><i style="background:#f3d1d1"></i>At risk (&lt; 15%)</span><span><i style="background:#f6e7c8"></i>Typical (15–35%)</span><span><i style="background:#cfe8d6"></i>Likely to return (&gt; 35%)</span></div>
+        </div>
+        <div class="verdict" id="verdict"><div class="big" id="vbig"></div><div class="lab" id="vlab"></div><div class="act" id="vact"></div></div>
+      </div>
+    </div>
+  </section>
+</div>
+<footer>Forward propagation only: the neuron is not trained here. “Aurora-fitted weights” come from a logistic regression on the 5,000 guests of the synthetic Aurora v3 dataset (outcome: returned_12m; average return rate 23%). A single neuron with a sigmoid activation <em>is</em> a logistic regression. Inputs are rescaled before entering the neuron: x₁ = satisfaction − 4, x₂ = distance in thousands of km. GELU uses the standard tanh approximation.</footer>
+</main>
+
+<script>
+const $=id=>document.getElementById(id);
+const BASE=0.23;               // average return rate in Aurora v3
+const FIT={w1:0.7,w2:-0.2,b:-2.1};
+
+// ----- inputs in real units, with their rescaling into x -----
+const INPUTS={
+  sat:{name:'Satisfaction with the stay',hint:'Survey score, 1 = very unhappy … 7 = delighted',min:1,max:7,step:0.1,
+       fmt:v=>v.toFixed(1)+' / 7',toX:v=>v-4},
+  km:{name:'Distance from home',hint:'Kilometres from the guest’s home to the hotel',min:0,max:10000,step:50,
+       fmt:v=>Math.round(v).toLocaleString('en')+' km',toX:v=>v/1000}
+};
+const PARAMS={
+  w1:{name:'Weight w₁ · satisfaction',hint:'How strongly satisfaction pushes the score (+ up, − down)'},
+  w2:{name:'Weight w₂ · distance',hint:'How strongly distance pushes the score (+ up, − down)'},
+  b:{name:'Bias b · starting point',hint:'Score of a “neutral” guest (satisfaction 4, next door)'}
+};
+const PERSONAS=[
+  {n:'Lucía',d:'Barcelona · beach hotel · loved it',sat:6.7,km:150},
+  {n:'James',d:'London · city break · fine',sat:5.3,km:1300},
+  {n:'Emily',d:'New York · once-in-a-lifetime trip',sat:6.0,km:6000},
+  {n:'Marco',d:'Milan · noisy room, complaint',sat:2.7,km:900}
+];
+
+for(const [k,o] of Object.entries(INPUTS)){
+  $('inputs').insertAdjacentHTML('beforeend',`<div class="ctl"><div class="top"><span class="name">${o.name}</span><span class="val" id="${k}v"></span></div><input type="range" id="${k}" min="${o.min}" max="${o.max}" step="${o.step}"><div class="hint">${o.hint} · <span id="${k}x"></span></div></div>`);
+  $(k).oninput=()=>{markPersona(null);update()};
+}
+for(const [k,o] of Object.entries(PARAMS)){
+  $('params').insertAdjacentHTML('beforeend',`<div class="ctl"><div class="top"><span class="name">${o.name}</span><span class="val" id="${k}v"></span></div><input type="range" id="${k}" min="-3" max="3" step="0.1"><div class="hint">${o.hint}<span id="${k}dir"></span></div></div>`);
+  $(k).oninput=update;
+}
+PERSONAS.forEach((p,i)=>{
+  $('personas').insertAdjacentHTML('beforeend',`<button id="p${i}"><b>${p.n}</b>${p.d}</button>`);
+  $('p'+i).onclick=()=>{$('sat').value=p.sat;$('km').value=p.km;markPersona(i);update()};
+});
+function markPersona(i){PERSONAS.forEach((_,j)=>$('p'+j).classList.toggle('on',j===i))}
+
+const F={
+  ReLU:x=>Math.max(0,x),Sigmoid:x=>1/(1+Math.exp(-x)),Tanh:x=>Math.tanh(x),
+  GELU:x=>.5*x*(1+Math.tanh(Math.sqrt(2/Math.PI)*(x+.044715*x**3))),SiLU:x=>x/(1+Math.exp(-x)),Linear:x=>x
+};
+const RANGE={Sigmoid:'0 to 1',ReLU:'0 to ∞',Tanh:'−1 to 1',GELU:'≈ −0.17 to ∞',SiLU:'≈ −0.28 to ∞',Linear:'−∞ to ∞'};
+const DESC={
+  Sigmoid:'Sigmoid squeezes any score into 0–1, so the output reads as a probability. This is the right choice for a yes/no question like “will the guest return?”.',
+  ReLU:'ReLU keeps positive scores and turns negative ones into 0. Great inside hidden layers, but its output (0 to ∞) is not a probability.',
+  Tanh:'Tanh squeezes the score into −1 to 1, centred at 0. Useful inside networks; it cannot be read as a probability.',
+  GELU:'GELU is a smooth version of ReLU used inside Transformer feed-forward blocks. Its output is not a probability.',
+  SiLU:'SiLU (used in SwiGLU) is a smooth, sigmoid-weighted ReLU. Its output is not a probability.',
+  Linear:'Linear means no activation: output = score. Without a non-linearity, stacking neurons adds no expressive power.'
+};
+const pct=p=>(p*100).toFixed(p<0.1?1:0)+'%';
+const sgn=v=>(v>=0?'+':'−')+Math.abs(v).toFixed(2);
+
+function update(){
+  const sat=+$('sat').value, km=+$('km').value;
+  const w1=+$('w1').value, w2=+$('w2').value, b=+$('b').value;
+  const x1=INPUTS.sat.toX(sat), x2=INPUTS.km.toX(km);
+  $('satv').textContent=INPUTS.sat.fmt(sat); $('kmv').textContent=INPUTS.km.fmt(km);
+  $('satx').textContent='enters as x₁ = '+x1.toFixed(1); $('kmx').textContent='enters as x₂ = '+x2.toFixed(2);
+  for(const k of ['w1','w2','b']) $(k+'v').textContent=(+$(k).value).toFixed(1);
+  const c1=w1*x1, c2=w2*x2, z=c1+c2+b;
+  const name=$('fn').value, f=F[name], a=f(z), isProb=name==='Sigmoid';
+  const isFit=Math.abs(w1-FIT.w1)<1e-9&&Math.abs(w2-FIT.w2)<1e-9&&Math.abs(b-FIT.b)<1e-9;
+  $('fitted').classList.toggle('on',isFit);
+  $('actdesc').textContent=DESC[name];
+  // direction of each input's effect (decided by the sign of its weight)
+  const dir=(w,inp,good)=>w===0?` · Now: ${inp} has <b>no effect</b>`:`<br>Now: more ${inp} → <span class="${(w>0)===good?'dirok':'dirbad'}">${w>0?'HIGHER':'LOWER'} chance</span>${(w>0)===good?'':' (opposite to Aurora data)'}`;
+  $('w1dir').innerHTML=dir(w1,'satisfaction',true);
+  $('w2dir').innerHTML=dir(w2,'distance',false);
+  $('bdir').innerHTML='';
+  const warns=[];
+  if(w1<0) warns.push('<b>w₁ is negative:</b> this neuron now says that <i>happier</i> guests are <i>less</i> likely to return. Aurora’s data says the opposite (w₁ ≈ +0.7).');
+  if(w2>0) warns.push('<b>w₂ is positive:</b> this neuron now says that guests who live <i>farther away</i> are <i>more</i> likely to return. Aurora’s data says the opposite (w₂ ≈ −0.2).');
+  $('warn').innerHTML=warns.length?'⚠ '+warns.join('<br>⚠ ')+' The <b>sign of a weight</b> decides the direction of each input’s effect. Click “Aurora-fitted weights” to restore the values learned from data.':'';
+  drawDiagram({sat,km,x1,x2,w1,w2,b,c1,c2,z,a,name,f});
+  // story in plain words
+  const word=c=>c>=0?'<b class="up">pushes up</b>':'<b class="down">pushes down</b>';
+  $('story').innerHTML=`Satisfaction ${INPUTS.sat.fmt(sat)} ${word(c1)} by ${Math.abs(c1).toFixed(2)} · distance ${INPUTS.km.fmt(km)} ${word(c2)} by ${Math.abs(c2).toFixed(2)} · starting point ${sgn(b)} → <span class="nw">score <b>z = ${z.toFixed(2)}</b></span> → ${name} → <b class="nw">${isProb?pct(a)+' chance of returning':'output '+a.toFixed(2)}</b>`;
+  drawGauge(a,isProb,name);
+}
+
+function drawDiagram(v){
+  const col=c=>c>=0?'var(--up)':'var(--down)';
+  const thick=w=>1.5+Math.min(9,Math.abs(w)*3.5);
+  const maxC=Math.max(1.5,Math.abs(v.c1),Math.abs(v.c2),Math.abs(v.b));
+  const bar=(y,c,label)=>{const L=Math.abs(c)/maxC*120,x0=c>=0?300:300-L;
+    return `<text x="190" y="${y+5}" text-anchor="end" font-size="15" fill="#475569">${label}</text><rect x="${x0}" y="${y-9}" width="${Math.max(L,1)}" height="18" rx="3" fill="${col(c)}" opacity=".85"/><text x="${c>=0?300+L+6:300-L-6}" y="${y+5}" font-size="15" font-weight="bold" fill="${col(c)}" text-anchor="${c>=0?'start':'end'}">${sgn(c)}</text>`};
+  const out=v.name==='Sigmoid'?pct(v.a):v.a.toFixed(2);
+  $('diagram').innerHTML=`
+  <defs><marker id="ar" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0L8 4L0 8Z" fill="#64748b"/></marker></defs>
+  <!-- inputs -->
+  <g font-size="15" fill="#20364c">
+    <rect x="5" y="22" width="150" height="62" rx="10" fill="#e0ebf4" stroke="#315575"/>
+    <text x="80" y="45" text-anchor="middle">Satisfaction</text><text x="80" y="72" text-anchor="middle" font-size="21" font-weight="bold">x₁ = ${v.x1.toFixed(1)}</text>
+    <rect x="5" y="146" width="150" height="62" rx="10" fill="#e0ebf4" stroke="#315575"/>
+    <text x="80" y="169" text-anchor="middle">Distance</text><text x="80" y="196" text-anchor="middle" font-size="21" font-weight="bold">x₂ = ${v.x2.toFixed(2)}</text>
+  </g>
+  <!-- weighted edges -->
+  <path d="M155 53 C 260 53, 330 100, 432 116" stroke="${col(v.c1)}" stroke-width="${thick(v.c1)}" fill="none" opacity=".75"/>
+  <path d="M155 177 C 260 177, 330 132, 432 128" stroke="${col(v.c2)}" stroke-width="${thick(v.c2)}" fill="none" opacity=".75"/>
+  <text x="290" y="40" font-size="17" text-anchor="middle" fill="#20364c">× w₁ (${v.w1.toFixed(1)}) = <tspan font-weight="bold" fill="${col(v.c1)}">${sgn(v.c1)}</tspan></text>
+  <text x="290" y="226" font-size="17" text-anchor="middle" fill="#20364c">× w₂ (${v.w2.toFixed(1)}) = <tspan font-weight="bold" fill="${col(v.c2)}">${sgn(v.c2)}</tspan></text>
+  <!-- bias -->
+  <path d="M470 30V76" stroke="#64748b" stroke-width="2" marker-end="url(#ar)"/>
+  <text x="470" y="22" font-size="17" text-anchor="middle" fill="#20364c">+ b = ${v.b.toFixed(1)}</text>
+  <!-- sum -->
+  <circle cx="470" cy="122" r="40" fill="#e0ebf4" stroke="#315575" stroke-width="2"/>
+  <text x="470" y="118" font-size="30" text-anchor="middle" fill="#20364c">Σ</text>
+  <text x="470" y="143" font-size="16" text-anchor="middle" font-weight="bold" fill="#20364c">z = ${v.z.toFixed(2)}</text>
+  <text x="470" y="185" font-size="14" text-anchor="middle" fill="#475569">score</text>
+  <path d="M510 122H547" stroke="#64748b" stroke-width="2" marker-end="url(#ar)"/>
+  <!-- activation with live mini-curve -->
+  <rect x="550" y="52" width="195" height="140" rx="10" fill="#f3f8f1" stroke="#487744" stroke-width="2"/>
+  <text x="647" y="76" font-size="18" font-weight="bold" text-anchor="middle" fill="#20364c">${v.name}</text>
+  ${miniCurve(v.f,v.z,v.a,v.name)}
+  <text x="647" y="212" font-size="14" text-anchor="middle" fill="#475569">activation</text>
+  <path d="M745 122H772" stroke="#64748b" stroke-width="2" marker-end="url(#ar)"/>
+  <!-- output -->
+  <circle cx="825" cy="122" r="50" fill="${v.name==='Sigmoid'?zoneColor(v.a):'#e7efe5'}" stroke="#20364c" stroke-width="2"/>
+  <text x="825" y="130" font-size="${out.length>5?20:24}" font-weight="bold" text-anchor="middle" fill="${v.name==='Sigmoid'?'#fff':'#20364c'}">${out}</text>
+  <text x="825" y="196" font-size="14" text-anchor="middle" fill="#475569">${v.name==='Sigmoid'?'P(return)':'output'}</text>`;
+}
+function miniCurve(f,z,a,name){
+  const L=Math.max(5,Math.ceil(Math.abs(z)+.5)),N=121,xs=Array.from({length:N},(_,i)=>-L+2*L*i/(N-1)),ys=xs.map(f);
+  let lo=Math.min(0,...ys),hi=Math.max(1,...ys);const pad=(hi-lo)*.06;lo-=pad;hi+=pad;
+  const X=x=>562+(x+L)/(2*L)*171, Y=y=>182-(y-lo)/(hi-lo)*96;
+  let s=`<path d="M562 ${Y(0)}H733 M${X(0)} 86V182" stroke="#94a3b8" stroke-width="1"/>`;
+  if(name==='Sigmoid')s+=`<path d="M562 ${Y(1)}H733" stroke="#cbd5df" stroke-dasharray="3 3"/><text x="566" y="${Y(1)-3}" font-size="11" fill="#64748b">100%</text>`;
+  s+=`<path d="${xs.map((x,i)=>(i?'L':'M')+X(x).toFixed(1)+' '+Y(ys[i]).toFixed(1)).join(' ')}" fill="none" stroke="#2f7d4a" stroke-width="3"/>`;
+  s+=`<path d="M${X(z)} ${Y(0)}V${Y(a)}" stroke="#315575" stroke-dasharray="4 3" stroke-width="1.5"/><circle cx="${X(z)}" cy="${Y(a)}" r="6" fill="#315575" stroke="#fff" stroke-width="1.5"/>`;
+  return s;
+}
+function zoneColor(p){return p<0.15?'#b83b3b':p<0.35?'#b7791f':'#2f7d4a'}
+
+function drawGauge(a,isProb,name){
+  const X=p=>20+p*480;
+  let s='';
+  if(isProb){
+    s+=`<rect x="${X(0)}" y="40" width="${X(.15)-X(0)}" height="40" fill="#f3d1d1"/><rect x="${X(.15)}" y="40" width="${X(.35)-X(.15)}" height="40" fill="#f6e7c8"/><rect x="${X(.35)}" y="40" width="${X(1)-X(.35)}" height="40" fill="#cfe8d6"/>`;
+    s+=`<rect x="${X(0)}" y="40" width="480" height="40" fill="none" stroke="#94a3b8"/>`;
+    for(const t of [0,.25,.5,.75,1]) s+=`<text x="${X(t)}" y="100" font-size="15" text-anchor="middle" fill="#526577">${t*100}%</text>`;
+    s+=`<path d="M${X(BASE)} 32V88" stroke="#20364c" stroke-width="2" stroke-dasharray="4 3"/><text x="${X(BASE)}" y="122" font-size="14" text-anchor="middle" fill="#20364c">Aurora average 23%</text>`;
+    s+=`<path d="M${X(a)} 36 l-11 -18 h22z" fill="${zoneColor(a)}" stroke="#20364c"/><rect x="${X(a)-3}" y="36" width="6" height="48" fill="#20364c"/>`;
+    s+=`<text x="${X(0)}" y="16" font-size="15" fill="#20364c">Probability that this guest returns within 12 months</text>`;
+    const zone=a<0.15?['At risk','Below the chain average. A good candidate for a personalised win-back offer.']:a<0.35?['Typical guest','Around the chain average (23%). A standard follow-up email is enough.']:['Likely to return','Well above average. Focus on loyalty perks rather than discounts.'];
+    $('vbig').textContent=pct(a); $('vlab').textContent=zone[0];
+    const rel=a/BASE; $('vact').textContent=`${rel>=1?rel.toFixed(1)+'× more':(1/rel).toFixed(1)+'× less'} likely than the average guest. ${zone[1]}`;
+    $('verdict').style.background=zoneColor(a);
+  }else{
+    s+=`<rect x="20" y="40" width="480" height="40" fill="#eef1f4" stroke="#cbd5df" stroke-dasharray="6 4"/>`;
+    s+=`<text x="260" y="66" font-size="17" text-anchor="middle" fill="#64748b">No probability scale for ${name} (range ${RANGE[name]})</text>`;
+    s+=`<text x="20" y="16" font-size="15" fill="#20364c">Probability that this guest returns within 12 months</text>`;
+    s+=`<text x="260" y="112" font-size="14" text-anchor="middle" fill="#64748b">Switch back to Sigmoid to read the output as a chance.</text>`;
+    $('vbig').textContent=a.toFixed(2); $('vlab').textContent='Not a probability';
+    $('vact').textContent=`${name} outputs values from ${RANGE[name]}. Is ${a.toFixed(2)} good or bad? We cannot tell. In a real network this value feeds the next layer, and only the final sigmoid turns it into a chance.`;
+    $('verdict').style.background='#64748b';
+  }
+  $('gauge').innerHTML=s;
+}
+
+function setFitted(){for(const k in FIT)$(k).value=FIT[k];update()}
+$('fn').onchange=update;
+$('fitted').onclick=setFitted;
+$('full').onclick=()=>{if(document.fullscreenElement)document.exitFullscreen();else document.documentElement.requestFullscreen?.()};
+$('sat').value=PERSONAS[0].sat;$('km').value=PERSONAS[0].km;markPersona(0);
+for(const k in FIT)$(k).value=FIT[k];
+update();
+</script>
+</body>
+</html>
