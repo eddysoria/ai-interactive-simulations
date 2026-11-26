@@ -1,0 +1,362 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Inside a Transformer · The capital of France is ___</title>
+<style>
+:root{--navy:#20364c;--blue:#315575;--red:#8b1e2d;--green:#2f7d4a;--amber:#b7791f;--grey:#64748b;--line:#cbd5df;--bg:#f7f8fa;--pos:#315575;--neg:#b83b3b;--purple:#6b4c9a}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--navy);font:clamp(14px,1vw,20px)/1.35 Arial,Helvetica,sans-serif}
+main{max-width:1850px;margin:auto;padding:.9em 2vw .8em}
+header{display:flex;justify-content:space-between;align-items:flex-end;gap:1em;border-bottom:2px solid var(--blue);padding-bottom:.5em}
+h1{font-size:clamp(22px,2.1vw,42px);margin:.1em 0;line-height:1.1}
+.question{font-size:1.12em;color:var(--red);font-style:italic}
+.hbtn{display:flex;gap:.4em;flex-shrink:0;align-items:center}
+.toy{font-size:.78em;background:#fff4e5;border:1px solid #f0c27a;border-radius:7px;padding:.35em .6em;color:#7a4b0b}
+button,select{font:inherit;font-size:.9em;padding:.4em .75em;border:1px solid #9baebe;border-radius:7px;background:#fff;color:var(--navy);cursor:pointer}
+button:hover{background:#e5edf4}
+button.on{background:var(--blue);color:#fff;border-color:var(--blue)}
+button:disabled{opacity:.4;cursor:default}
+.bar{display:flex;flex-wrap:wrap;gap:.5em;align-items:center;margin:.6em 0 .2em}
+.steps{display:flex;gap:.25em;flex-wrap:wrap}
+.steps button{font-size:.8em;padding:.35em .6em}
+.steps button .k{display:inline-grid;place-items:center;width:1.45em;height:1.45em;border-radius:50%;background:#e2e8f0;margin-right:.3em;font-size:.85em;font-weight:bold}
+.steps button.on .k{background:#fff;color:var(--blue)}
+.ctlbar{display:flex;flex-wrap:wrap;gap:.8em;align-items:center;background:#fff;border:1px solid var(--line);border-radius:10px;padding:.4em .7em;margin:.4em 0 .7em;font-size:.92em}
+.ctlbar label{display:flex;align-items:center;gap:.35em}
+.ctlbar .grow{flex:1}
+input[type=range]{accent-color:var(--blue);width:9em}
+#attnBtn.off{background:var(--neg);color:#fff;border-color:var(--neg)}
+.layout{display:grid;grid-template-columns:minmax(240px,21%) minmax(0,1fr);gap:1em;align-items:start}
+.panel{background:#fff;border:1px solid var(--line);border-radius:12px;padding:.8em 1.05em}
+h2{font-size:1.1em;margin:0 0 .5em;display:flex;align-items:center;gap:.45em}
+h2 .n{display:inline-grid;place-items:center;width:1.6em;height:1.6em;border-radius:50%;background:var(--blue);color:#fff;font-size:.85em}
+h3{font-size:.95em;margin:.6em 0 .35em;color:var(--blue)}
+svg{width:100%;display:block}
+.story{font-size:.95em;background:#f1f5f9;border-left:4px solid var(--blue);padding:.5em .8em;border-radius:0 8px 8px 0;margin:.2em 0 .6em}
+.real{font-size:.86em;background:#fff4e5;border-left:4px solid var(--amber);padding:.4em .8em;border-radius:0 8px 8px 0;margin:.6em 0 0}
+.alert{font-size:.92em;background:#fdecec;border-left:4px solid var(--neg);padding:.45em .8em;border-radius:0 8px 8px 0;margin:.3em 0 .6em}
+.grid2>*,.grid3>*{min-width:0}
+.grid2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:1em;align-items:start}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.8em;align-items:start}
+table.m{border-collapse:collapse;font-size:.82em;font-variant-numeric:tabular-nums}
+table.m td,table.m th{padding:.18em .42em;text-align:right;border:1px solid #e2e8f0;white-space:nowrap}
+table.m th{background:#f1f5f9;font-weight:bold;color:var(--blue)}
+table.m th.rl{text-align:left}
+table.m tr.sel th.rl{background:var(--blue);color:#fff}
+table.m td.mask{background:#e5e7eb;color:#9ca3af;text-align:center}
+table.m tr.click{cursor:pointer}
+table.m tr.click:hover th.rl{background:#dbe5ee}
+.cap{font-size:.75em;color:var(--grey);margin:.2em 0 .5em}
+.chips{display:flex;flex-wrap:wrap;gap:.45em;margin:.3em 0 .6em}
+.chip{border:2px solid var(--blue);border-radius:9px;padding:.3em .6em;background:#fff;text-align:center;min-width:4.2em;cursor:pointer}
+.chip b{display:block;font-size:1.1em}
+.chip span{font-size:.75em;color:var(--grey)}
+.chip.sel{background:var(--blue);color:#fff}.chip.sel span{color:#dbe5ee}
+.chip.new{border-color:var(--green);background:#eaf5ee}
+.chip.ghost{border-style:dashed;border-color:var(--red);color:var(--red);cursor:default}
+.vocab{display:grid;grid-template-columns:repeat(5,1fr);gap:.25em;font-size:.82em}
+.vocab div{border:1px solid #e2e8f0;border-radius:5px;padding:.15em .35em;display:flex;justify-content:space-between}
+.vocab div.use{background:#dbe5ee;border-color:var(--blue);font-weight:bold}
+.eq{font-family:Consolas,Menlo,monospace;font-size:.85em;background:#f8fafc;border:1px solid #e2e8f0;border-radius:7px;padding:.45em .6em;margin:.3em 0;overflow-x:auto;white-space:normal}
+.big{font-size:1.4em;font-weight:bold}
+.pbars{display:grid;grid-template-columns:auto 1fr auto;gap:.22em .5em;align-items:center;font-size:.88em}
+.pbars .t{height:1.05em;background:#e2e8f0;border-radius:4px;overflow:hidden}
+.pbars .t i{display:block;height:100%;background:var(--blue)}
+.pbars .w1 i{background:var(--green)}
+.pbars .nm{font-weight:bold}
+.legend{font-size:.76em;color:var(--grey);display:flex;gap:1em;flex-wrap:wrap;margin-top:.3em}
+.legend i{display:inline-block;width:.85em;height:.85em;border-radius:50%;vertical-align:-.1em;margin-right:.3em}
+.sentence{font-size:1.5em;margin:.3em 0 .5em}
+.sentence .new{color:var(--green);font-weight:bold;border-bottom:3px solid var(--green)}
+.sentence .blank{color:var(--red);font-weight:bold}
+.log{font-size:.85em;max-height:16em;overflow:auto}
+.log div{border-bottom:1px solid #eef2f6;padding:.25em 0}
+.nav{display:flex;justify-content:space-between;align-items:center;margin-top:.7em}
+.nav .hint{font-size:.78em;color:var(--grey)}
+.card{border:1px solid var(--line);border-radius:10px;padding:.5em .8em;background:#fbfcfd}
+.card ul{margin:.2em 0;padding-left:1.2em}
+.mono{font-family:Consolas,Menlo,monospace}
+.train{font-size:.8em;columns:2;column-gap:1.5em}
+.train div{break-inside:avoid}
+footer{margin-top:.7em;color:#526577;font-size:.74em}
+@media(max-width:1100px){.layout{grid-template-columns:1fr}.grid2,.grid3{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<main>
+<header>
+  <div>
+    <h1>Inside a Transformer <span style="font-weight:normal;font-size:.6em;color:#526577">how a GPT-style model predicts the next word</span></h1>
+    <div class="question" id="qline">The capital of France is ___ ?</div>
+  </div>
+  <div class="hbtn"><span class="toy"><b>Toy model, real mechanics.</b> Every number on screen is computed live.</span><button id="full">Full screen</button></div>
+</header>
+
+<div class="bar"><div class="steps" id="steps"></div></div>
+
+<div class="ctlbar">
+  <label>Prompt <select id="prompt"></select></label>
+  <label>Country <select id="country"></select></label>
+  <button id="attnBtn" class="on" title="Switch the attention layer on or off">Attention: ON</button>
+  <label>Temperature <input type="range" id="temp" min="0.1" max="3" step="0.1" value="1"><b id="tempv">1.0</b></label>
+  <span class="grow"></span>
+  <span id="topline" style="font-size:.95em"></span>
+</div>
+
+<div class="layout">
+  <section class="panel">
+    <h2>Where are we?</h2>
+    <svg id="arch" viewBox="0 0 300 560" aria-label="Transformer decoder diagram"></svg>
+    <div class="cap">Decoder-only Transformer (the GPT family). Here: 1 layer, 1 attention head, vectors of 4 numbers.</div>
+  </section>
+  <section class="panel" id="stage"></section>
+</div>
+
+<div class="nav">
+  <button id="back">◀ Back</button>
+  <span class="hint">Keyboard: ← → to move between steps · click a token to follow it</span>
+  <button id="next">Next ▶</button>
+</div>
+
+<footer>
+  Toy decoder-only Transformer trained with PyTorch (Adam, cross-entropy) on the 20 sentences listed in step 0. Vocabulary of 20 words, d = 4, one attention head, feed-forward with 8 hidden ReLU units, sinusoidal positions, output layer tied to the embedding matrix (as in GPT-2). Layer normalisation and the attention output projection are left out to keep the arithmetic readable. A real GPT does exactly these operations, only with thousands of dimensions, dozens of heads and dozens of layers.
+</footer>
+</main>
+
+<script>
+const W={"E":[[-0.6736,-0.1601,0.9443,0.3015],[0.6385,0.9806,-0.7723,-0.6379],[0.8361,-0.2701,-0.0352,-1.1896],[0.6563,-0.1031,1.1873,1.5335],[0.2948,-0.9201,1.5119,0.1786],[-0.2161,0.5063,1.0356,-0.4007],[-1.1138,-1.0402,-0.245,-1.1629],[-0.8832,-0.8815,-0.7652,0.6427],[0.8045,-0.732,-0.4016,-0.0232],[0.0566,-0.1344,-1.3264,0.4434],[0.0722,-1.4176,0.33,0.3436],[-0.4283,0.4716,-0.7319,0.3437],[-0.1346,0.9828,0.6837,0.3171],[-0.1313,0.3975,0.0091,1.0968],[-0.3263,0.851,-0.1814,-0.4079],[-0.047,0.0575,-0.5097,-0.1653],[0.098,0.6581,0.5516,0.112],[-0.0675,0.1845,0.1484,0.4647],[0.1427,0.6111,-0.2126,-0.205],[-0.7002,-0.0061,-1.2186,-0.5903]],"Wq":[[0.0891,0.1831,0.0332,0.1966],[-0.5646,0.1068,0.0929,0.9874],[0.1279,0.343,0.056,0.3965],[0.5344,0.9227,0.1098,0.8193]],"Wk":[[0.1322,-0.0523,-0.0184,-0.2587],[-0.3866,-0.9832,-0.1419,-1.1307],[-0.5977,-0.1786,0.0442,0.5472],[-0.3004,0.0108,0.0462,0.4505]],"Wv":[[1.1987,-0.1042,0.5985,0.0705],[0.9121,-0.7264,-2.0173,0.1691],[0.1435,1.7311,-0.3574,-1.3068],[-0.7335,0.9107,-0.4321,0.5311]],"W1":[[0.4746,-0.0701,0.81,-0.0029,0.0841,0.1084,0.0473,-1.8892],[1.4788,0.4286,-0.3086,0.8162,-0.4885,-0.7872,-0.5024,0.673],[0.629,-0.7681,-0.0063,-1.3647,-0.3863,-0.4954,1.2153,0.1897],[-0.2995,-0.1376,-0.1755,-0.1502,1.355,-0.0485,0.6941,0.207]],"b1":[0.2897,-0.0688,0.1043,0.0006,0.2608,0.1689,-0.2135,0.3595],"W2":[[-0.4956,-0.5255,0.9461,-1.2693],[0.8182,0.0307,0.2004,-0.0093],[-0.0822,-0.0944,-0.8856,-0.0094],[1.4768,-0.1024,0.597,0.055],[-0.2523,-0.7735,0.2555,1.2529],[-0.0756,-0.903,-0.2992,-0.0284],[0.0489,1.2874,0.5959,0.5202],[-0.6398,0.693,-1.7945,-0.3352]],"b2":[-0.0167,-0.2167,-0.1641,-0.0424],"vocab":["The","capital","of","is","a","city","in","France","Spain","Italy","Germany","Paris","Madrid","Rome","Berlin","Lyon","Barcelona","Milan","Munich","."],"pca":[[0.8299,-0.2421],[-0.9493,1.0447],[-0.4351,-0.133],[1.8619,0.1457],[1.5001,-0.7702],[0.5972,0.4782],[-0.8877,-1.2934],[-0.4437,-1.0364],[-0.157,-0.5567],[-0.9144,-0.1406],[0.5715,-1.337],[-0.5952,0.3685],[0.6111,0.9772],[0.4583,0.4136],[-0.4979,0.7493],[-0.5419,0.0297],[0.4712,0.6949],[0.3065,0.1981],[-0.3214,0.6186],[-1.464,-0.2089]],"pcaVar":66,"nparams":204,"loss":0.145,"train":["The capital of France is Paris .  (\u00d73)","Paris is a city in France .","Lyon is a city in France .","The capital of Spain is Madrid .  (\u00d73)","Madrid is a city in Spain .","Barcelona is a city in Spain .","The capital of Italy is Rome .  (\u00d73)","Rome is a city in Italy .","Milan is a city in Italy .","The capital of Germany is Berlin .  (\u00d73)","Berlin is a city in Germany .","Munich is a city in Germany ."],"mapPairs":false};
+const V=W.vocab, D=4, H=W.b1.length, LMAX=8;
+const IX={};V.forEach((w,i)=>IX[w]=i);
+const COUNTRIES=[["France","Paris","Lyon"],["Spain","Madrid","Barcelona"],["Italy","Rome","Milan"],["Germany","Berlin","Munich"]];
+const PROMPTS=[
+  {k:"cap",lab:"The capital of ___ is",f:c=>`The capital of ${c[0]} is`},
+  {k:"capcity",lab:"[capital] is a city in",f:c=>`${c[1]} is a city in`},
+  {k:"city",lab:"[other city] is a city in",f:c=>`${c[2]} is a city in`},
+  {k:"open",lab:"The capital of",f:c=>`The capital of`}
+];
+// ---------- maths ----------
+const PE=[];for(let p=0;p<LMAX;p++){const r=[];for(let i=0;i<D;i+=2){const f=Math.pow(10000,i/D);r.push(Math.sin(p/f),Math.cos(p/f));}PE.push(r);}
+const mm=(A,B)=>A.map(r=>B[0].map((_,j)=>r.reduce((s,v,k)=>s+v*B[k][j],0)));
+const vm=(v,B)=>B[0].map((_,j)=>v.reduce((s,x,k)=>s+x*B[k][j],0));
+const add=(a,b)=>a.map((v,i)=>Array.isArray(v)?add(v,b[i]):v+b[i]);
+const dot=(a,b)=>a.reduce((s,v,i)=>s+v*b[i],0);
+const T_=A=>A[0].map((_,j)=>A.map(r=>r[j]));
+function softmax(z,t=1){const m=Math.max(...z.map(v=>v/t));const e=z.map(v=>Math.exp(v/t-m));const s=e.reduce((a,b)=>a+b,0);return e.map(v=>v/s);}
+function forward(words,attnOn){
+  const ids=words.map(w=>IX[w]), n=ids.length;
+  const E=ids.map(i=>W.E[i].slice()), P=PE.slice(0,n), X=add(E,P);
+  const Q=mm(X,W.Wq), K=mm(X,W.Wk), Vv=mm(X,W.Wv);
+  const S=Q.map(q=>K.map(k=>dot(q,k)));
+  const Ss=S.map(r=>r.map(v=>v/Math.sqrt(D)));
+  const A=Ss.map((r,i)=>{const z=r.map((v,j)=>j<=i?v:-Infinity);const m=Math.max(...z.slice(0,i+1));const e=z.map(v=>v===-Infinity?0:Math.exp(v-m));const s=e.reduce((a,b)=>a+b,0);return e.map(v=>v/s);});
+  const O=mm(A,Vv);
+  const X1=attnOn?add(X,O):X.map(r=>r.slice());
+  const Hpre=add(mm(X1,W.W1),X1.map(()=>W.b1)), Hh=Hpre.map(r=>r.map(v=>Math.max(0,v)));
+  const F=add(mm(Hh,W.W2),X1.map(()=>W.b2)), X2=add(X1,F);
+  const logits=vm(X2[n-1],T_(W.E));
+  return {words,ids,n,E,P,X,Q,K,Vv,S,Ss,A,O,X1,Hpre,Hh,F,X2,logits};
+}
+// ---------- state ----------
+const st={step:0,prompt:"cap",country:0,attn:true,T:1,sel:null,gen:null,mode:"greedy"};
+const promptWords=()=>PROMPTS.find(p=>p.k===st.prompt).f(COUNTRIES[st.country]).split(" ");
+// ---------- formatting ----------
+const f2=v=>(v<0?"−":"")+Math.abs(v).toFixed(2);
+const pct=v=>v>=0.995?(v*100).toFixed(1)+"%":v>=0.001?(v*100).toFixed(1)+"%":"<0.1%";
+function col(v,scale=1.5){const a=Math.min(1,Math.abs(v)/scale)*.55;return v>=0?`rgba(49,85,117,${a})`:`rgba(184,59,59,${a})`;}
+function mtab(M,rl,cl,o={}){
+  let h=`<table class="m"><tr><th class="rl">${o.corner||""}</th>${cl.map(c=>`<th>${c}</th>`).join("")}</tr>`;
+  M.forEach((r,i)=>{h+=`<tr class="${o.click?"click":""} ${o.sel===i?"sel":""}" ${o.click?`data-row="${i}"`:""}><th class="rl">${rl[i]}</th>`+r.map((v,j)=>{
+    if(o.mask&&j>i)return `<td class="mask">${o.maskTxt||"−∞"}</td>`;
+    const bg=o.heat?`rgba(49,85,117,${(v*.9).toFixed(3)})`:col(v,o.scale);const fc=o.heat&&v>.55?"#fff":"inherit";
+    return `<td style="background:${bg};color:${fc}">${o.fmt?o.fmt(v):f2(v)}</td>`}).join("")+"</tr>";});
+  return h+"</table>";
+}
+const dims=["d1","d2","d3","d4"];
+const vecRow=v=>"["+v.map(f2).join(", ")+"]";
+// ---------- architecture diagram ----------
+const BOX=[
+ {id:"out",y:12,h:34,t:"Next word: “Paris”",s:[6,7],fill:"#eaf5ee",st:"#2f7d4a"},
+ {id:"soft",y:62,h:34,t:"Softmax → probabilities",s:[6]},
+ {id:"lin",y:108,h:34,t:"Linear: score every word",s:[6]},
+ {id:"add2",y:158,h:24,t:"Add (residual)",s:[5],small:1},
+ {id:"ffn",y:190,h:40,t:"Feed-forward network",s:[5]},
+ {id:"add1",y:246,h:24,t:"Add (residual)",s:[4],small:1},
+ {id:"attn",y:278,h:46,t:"Masked self-attention",s:[4]},
+ {id:"pos",y:352,h:34,t:"+ Positional encoding",s:[3]},
+ {id:"emb",y:398,h:34,t:"Token embedding",s:[2]},
+ {id:"tok",y:444,h:34,t:"Tokenizer: text → IDs",s:[1]},
+ {id:"in",y:494,h:34,t:"“The capital of France is”",s:[1],fill:"#f1f5f9"}
+];
+function drawArch(){
+  const s=st.step;let g=`<defs><marker id="ar" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8z" fill="#64748b"/></marker></defs>`;
+  g+=`<rect x="28" y="150" width="214" height="184" rx="12" fill="none" stroke="#9baebe" stroke-dasharray="5 4"/><text x="250" y="246" font-size="12" fill="#64748b" transform="rotate(90 250 246)" text-anchor="middle">Transformer block ×N (here N=1)</text>`;
+  BOX.forEach((b,i)=>{
+    const on=s===0||b.s.includes(s);const x=b.small?75:40,w=b.small?120:190;
+    const fill=on?(b.fill||"#dbe5ee"):"#f8fafc",stroke=on?(b.st||"#315575"):"#cbd5df",tc=on?"#20364c":"#9aa8b6";
+    const glow=(s>0&&b.s.includes(s))?`stroke-width="3.2"`:`stroke-width="1.3"`;
+    let t=b.t;if(b.id==="in")t="“"+(st.gen?st.gen.words.slice(-4).join(" "):promptWords().join(" "))+"”";
+    if(b.id==="out"){const r=lastPred();t="Next word: “"+r+"”";}
+    if(b.id==="attn"&&!st.attn){g+=`<rect x="${x}" y="${b.y}" width="${w}" height="${b.h}" rx="9" fill="#fdecec" stroke="#b83b3b" ${glow}/><text x="${x+w/2}" y="${b.y+b.h/2+5}" text-anchor="middle" font-size="13" fill="#b83b3b" font-weight="bold">Attention OFF</text>`;}
+    else g+=`<rect x="${x}" y="${b.y}" width="${w}" height="${b.h}" rx="9" fill="${fill}" stroke="${stroke}" ${glow}/><text x="${x+w/2}" y="${b.y+b.h/2+5}" text-anchor="middle" font-size="${b.small?11:13}" fill="${tc}" font-weight="${on&&s>0?"bold":"normal"}">${t}</text>`;
+    if(i<BOX.length-1){const nb=BOX[i+1];g+=`<line x1="135" y1="${nb.y}" x2="135" y2="${b.y+b.h+2}" stroke="#64748b" stroke-width="1.5" marker-end="url(#ar)"/>`;}
+  });
+  // residual bypass lines
+  g+=`<path d="M135,340 L60,340 L60,258 L75,258" fill="none" stroke="#94a3b8" stroke-width="1.3" marker-end="url(#ar)"/>`;
+  g+=`<path d="M135,240 L60,240 L60,170 L75,170" fill="none" stroke="#94a3b8" stroke-width="1.3" marker-end="url(#ar)"/>`;
+  const lc=s===7||s===0?"#2f7d4a":"#cbd5df";
+  g+=`<path d="M232,29 C292,29 292,511 232,511" fill="none" stroke="${lc}" stroke-width="${s===7?3:1.5}" stroke-dasharray="6 4" marker-end="url(#ar)"/><text x="282" y="300" font-size="11" fill="${lc}" transform="rotate(90 282 300)" text-anchor="middle">append the new word and repeat</text>`;
+  document.getElementById("arch").innerHTML=g;
+}
+function lastPred(){if(st.gen&&st.gen.log.length)return st.gen.log[st.gen.log.length-1].w;const r=forward(curWords(),st.attn);const p=softmax(r.logits,st.T);return V[p.indexOf(Math.max(...p))];}
+const curWords=()=>st.gen?st.gen.words:promptWords();
+// ---------- steps ----------
+const STEPS=["Big picture","Tokens","Embeddings","Position","Attention","Feed-forward","Output","Generate"];
+function tokChips(r,sel){return `<div class="chips">`+r.words.map((w,i)=>`<div class="chip ${sel===i?"sel":""}" data-tok="${i}"><b>${w}</b><span>ID ${r.ids[i]} · pos ${i}</span></div>`).join("")+`<div class="chip ghost"><b>?</b><span>next</span></div></div>`;}
+function selIdx(r){return st.sel==null||st.sel>=r.n?r.n-1:st.sel;}
+const R={};
+R[0]=r=>`<h2><span class="n">0</span>The big picture</h2>
+<div class="story">A Transformer like GPT does one thing over and over: <b>given some words, it gives a probability to every possible next word</b>. To answer “The capital of France is ___”, the sentence travels up the diagram on the left: words become numbers, the numbers <b>look at each other</b> (attention), get processed (feed-forward), and are finally compared with every word in the vocabulary. Use <b>Next ▶</b> to follow the numbers one block at a time.</div>
+<div class="grid2"><div class="card"><h3>Our toy model</h3><ul>
+<li>Vocabulary: <b>${V.length} words</b> (GPT-4 class models: ~100,000–200,000 tokens)</li>
+<li>Each word is a vector of <b>4 numbers</b> (GPT-3: 12,288)</li>
+<li><b>1</b> Transformer block with <b>1</b> attention head (GPT-3: 96 blocks × 96 heads)</li>
+<li>Feed-forward with <b>${H}</b> hidden neurons</li>
+<li>Total: <b>${W.nparams} parameters</b> (GPT-3: 175,000,000,000)</li></ul>
+<h3>Try it</h3><ul><li>Change <b>Country</b> to Spain, Italy or Germany and watch the prediction move.</li><li>Switch <b>Attention OFF</b>: the model can no longer “see” the country, and it fails.</li><li>Raise the <b>Temperature</b> to make the model less sure.</li></ul></div>
+<div class="card"><h3>Everything it ever read (training data)</h3><div class="train">${W.train.map(s=>`<div>${s}</div>`).join("")}</div>
+<div class="cap">The weights were learned by gradient descent on these sentences (the same training loop as in the neuron simulator), not set by hand. Average cross-entropy after training: ${W.loss.toFixed(3)}.</div></div></div>`;
+R[1]=r=>`<h2><span class="n">1</span>Tokens: text becomes ID numbers</h2>
+<div class="story">A computer cannot read words, so the first job is to cut the text into pieces called <b>tokens</b> and replace each one by its position in a fixed list (the <b>vocabulary</b>). Our sentence becomes the list <b class="mono">[${r.ids.join(", ")}]</b>. From now on the model only sees these numbers.</div>
+${tokChips(r,null)}
+<h3>The whole vocabulary (${V.length} tokens)</h3><div class="vocab">${V.map((w,i)=>`<div class="${r.ids.includes(i)?"use":""}"><span>${w}</span><span>${i}</span></div>`).join("")}</div>
+<div class="real">In a real GPT, tokens are often pieces of words (e.g. “Barcel” + “ona”), and spaces and capital letters matter. The idea is identical: text → list of integers.</div>`;
+function mapSVG(r){
+  const P=W.pca, xs=P.map(p=>p[0]), ys=P.map(p=>p[1]);
+  const x0=Math.min(...xs),x1=Math.max(...xs),y0=Math.min(...ys),y1=Math.max(...ys);
+  const X=v=>40+(v-x0)/(x1-x0)*420, Y=v=>270-(v-y0)/(y1-y0)*240;
+  const kind=w=>COUNTRIES.some(c=>c[0]===w)?"#8b1e2d":COUNTRIES.some(c=>c[1]===w)?"#315575":COUNTRIES.some(c=>c[2]===w)?"#2f7d4a":"#94a3b8";
+  let g="";
+  if(W.mapPairs)COUNTRIES.forEach(c=>{const a=IX[c[0]],b=IX[c[1]];g+=`<line x1="${X(P[a][0])}" y1="${Y(P[a][1])}" x2="${X(P[b][0])}" y2="${Y(P[b][1])}" stroke="#cbd5df" stroke-dasharray="3 3"/>`;});
+  V.forEach((w,i)=>{const u=r.ids.includes(i);g+=`<circle cx="${X(P[i][0])}" cy="${Y(P[i][1])}" r="${u?7:5}" fill="${kind(w)}" stroke="${u?"#20364c":"none"}" stroke-width="2.5"/><text x="${X(P[i][0])+8}" y="${Y(P[i][1])+4}" font-size="${u?14:12}" font-weight="${u?"bold":"normal"}" fill="#20364c">${w}</text>`;});
+  return `<svg viewBox="0 0 520 290">${g}</svg><div class="legend"><span><i style="background:#8b1e2d"></i>countries</span><span><i style="background:#315575"></i>capitals</span><span><i style="background:#2f7d4a"></i>other cities</span><span><i style="background:#94a3b8"></i>other words</span></div>`;
+}
+R[2]=r=>{const s=selIdx(r);return `<h2><span class="n">2</span>Embeddings: each ID becomes a vector</h2>
+<div class="story">Each token ID picks one row of a table called the <b>embedding matrix</b> (${V.length} rows × 4 columns). That row is the word’s “meaning” as a list of 4 numbers. These numbers were <b>learned</b> during training: words used in similar ways end up with similar vectors.</div>
+${tokChips(r,s)}
+<div class="grid2"><div><h3>Looked-up rows of the embedding matrix</h3>${mtab(r.E,r.words.map((w,i)=>`${w} (ID ${r.ids[i]})`),dims,{click:1,sel:s})}
+<div class="eq">ID ${r.ids[s]} (“${r.words[s]}”) → row ${r.ids[s]} → ${vecRow(r.E[s])}</div>
+<div class="cap">Blue = positive, red = negative. Darker = larger in size.</div></div>
+<div><h3>Map of all ${V.length} embeddings (4-D squeezed to 2-D)</h3>${mapSVG(r)}<div class="cap">2-D projection (PCA) of the 4-D vectors; it keeps ${W.pcaVar}% of the spread, so distances are only approximate. Even after reading only 12 different sentences, the cities (blue and green) gather in one region, close to the word “city”, while the countries (red) sit apart: they appear in different places in the sentences.</div></div></div>
+<div class="real">GPT-3 stores a 50,257 × 12,288 embedding table. With that much room and billions of sentences, the map becomes rich: countries cluster together, capitals cluster together, and the step from a country to its capital is similar for every country.</div>`;};
+R[3]=r=>{const s=selIdx(r);return `<h2><span class="n">3</span>Position: telling the model the word order</h2>
+<div class="story">Attention (next step) treats the tokens as a <b>set</b>: without extra help, “France is the capital” and “the capital is France” would look identical. So we <b>add</b> a position vector to every embedding. The original Transformer uses waves (sine and cosine) of different speeds, so each position gets its own unique pattern.</div>
+${tokChips(r,s)}
+<div class="eq">PE(pos, 2i) = sin(pos / 10000<sup>2i/4</sup>) &nbsp;&nbsp; PE(pos, 2i+1) = cos(pos / 10000<sup>2i/4</sup>)</div>
+<div class="grid3"><div><h3>Token embedding</h3>${mtab(r.E,r.words,dims,{click:1,sel:s})}</div>
+<div><h3>+ Position vector</h3>${mtab(r.P,r.words.map((w,i)=>"pos "+i),dims,{click:1,sel:s})}</div>
+<div><h3>= Input vector x</h3>${mtab(r.X,r.words,dims,{click:1,sel:s})}</div></div>
+<div class="eq">x(“${r.words[s]}”) = ${vecRow(r.E[s])} + ${vecRow(r.P[s])} = <b>${vecRow(r.X[s])}</b></div>
+<div class="real">Many modern models (Llama, GPT-NeoX) use a variant called rotary position encoding (RoPE), but the purpose is the same: inject word order.</div>`;};
+R[4]=r=>{const s=selIdx(r),q=r.Q[s];const rowS=r.S[s];
+const det=r.words.map((w,j)=>j>s?`<tr><th class="rl">${w}</th><td colspan="4" class="mask">future word: hidden by the mask</td></tr>`:`<tr><th class="rl">${w}</th><td>${f2(rowS[j])}</td><td>${f2(r.Ss[s][j])}</td><td style="background:rgba(49,85,117,${(r.A[s][j]*.9).toFixed(3)});color:${r.A[s][j]>.55?"#fff":"inherit"}"><b>${(r.A[s][j]*100).toFixed(1)}%</b></td><td>${vecRow(r.Vv[j])}</td></tr>`).join("");
+const top=r.A[s].map((a,j)=>[a,j]).sort((a,b)=>b[0]-a[0])[0];
+return `<h2><span class="n">4</span>Masked self-attention: the words look at each other</h2>
+${st.attn?"":`<div class="alert"><b>Attention is OFF.</b> The numbers below are still computed, but their result is thrown away: each token keeps only its own vector and cannot learn anything from the other words.</div>`}
+<div class="story">This is the heart of the Transformer. Each token asks a <b>question</b> (Query), shows a <b>label</b> (Key) and carries <b>content</b> (Value). A token compares its Query with every Key: a good match means “this word is useful to me”. The matches become percentages (softmax), and the token collects a weighted mix of the Values. Here, “<b>${r.words[s]}</b>” pays most attention to “<b>${r.words[top[1]]}</b>” (${(top[0]*100).toFixed(0)}%). Click any token to see its own calculation.</div>
+${tokChips(r,s)}
+<div class="grid3"><div><h3>Query = x · W<sub>Q</sub></h3>${mtab(r.Q,r.words,dims,{click:1,sel:s})}</div><div><h3>Key = x · W<sub>K</sub></h3>${mtab(r.K,r.words,dims,{click:1,sel:s})}</div><div><h3>Value = x · W<sub>V</sub></h3>${mtab(r.Vv,r.words,dims,{click:1,sel:s})}</div></div>
+<div class="grid2" style="margin-top:.4em"><div><h3>Calculation for “${r.words[s]}”</h3>
+<table class="m"><tr><th class="rl">looks at</th><th>Q·K</th><th>÷ √4</th><th>softmax</th><th>Value carried</th></tr>${det}</table>
+<div class="eq">Q·K(“${r.words[0]}”) = ${q.map((v,k)=>`${f2(v)}×${f2(r.K[0][k])}`).join(" + ")} = ${f2(rowS[0])}</div>
+<div class="eq">output = ${r.A[s].slice(0,s+1).map((a,j)=>`${a.toFixed(2)}·V<sub>${r.words[j]}</sub>`).join(" + ")} = <b>${vecRow(r.O[s])}</b></div>
+<div class="eq">after the residual “Add”: x + output = ${vecRow(r.X[s])} + ${st.attn?vecRow(r.O[s]):"[0, 0, 0, 0]"} = <b>${vecRow(r.X1[s])}</b></div></div>
+<div><h3>Attention map (rows look at columns)</h3>${mtab(r.A,r.words,r.words,{click:1,sel:s,heat:1,mask:1,maskTxt:"·",fmt:v=>(v*100).toFixed(0)+"%"})}
+<div class="cap">Each row adds up to 100%. Grey cells are the <b>causal mask</b>: a word may only look at itself and earlier words, never at the future, because when generating text the future does not exist yet. We divide by √4 = 2 (the square root of the vector size) so the scores do not grow too large before softmax.</div></div></div>
+<div class="real">GPT-3 runs 96 of these heads in parallel in each of its 96 layers, each head learning to look for something different (the previous word, the subject of the sentence, a matching bracket…).</div>`;};
+function ffnSVG(r,s){
+  const x=r.X1[s],h=r.Hh[s],o=r.X2[s];const yi=i=>40+i*62,yh=j=>16+j*(248/(H-1)),yo=i=>40+i*62;
+  let g="";
+  for(let i=0;i<D;i++)for(let j=0;j<H;j++){const w=W.W1[i][j];g+=`<line x1="70" y1="${yi(i)}" x2="230" y2="${yh(j)}" stroke="${w>=0?"#315575":"#b83b3b"}" stroke-opacity="${Math.min(.8,Math.abs(w)*.35)}" stroke-width="${.5+Math.min(3,Math.abs(w)*1.2)}"/>`;}
+  for(let j=0;j<H;j++)for(let i=0;i<D;i++){const w=W.W2[j][i];const live=h[j]>0;g+=`<line x1="270" y1="${yh(j)}" x2="430" y2="${yo(i)}" stroke="${w>=0?"#315575":"#b83b3b"}" stroke-opacity="${live?Math.min(.8,Math.abs(w)*.35):.05}" stroke-width="${.5+Math.min(3,Math.abs(w)*1.2)}"/>`;}
+  for(let i=0;i<D;i++)g+=`<circle cx="50" cy="${yi(i)}" r="20" fill="${col(x[i],2)}" stroke="#315575"/><text x="50" y="${yi(i)+4}" text-anchor="middle" font-size="12">${f2(x[i])}</text>`;
+  for(let j=0;j<H;j++){const z=h[j]===0;g+=`<circle cx="250" cy="${yh(j)}" r="15" fill="${z?"#f1f5f9":col(h[j],2)}" stroke="${z?"#cbd5df":"#315575"}"/><text x="250" y="${yh(j)+4}" text-anchor="middle" font-size="10" fill="${z?"#94a3b8":"#20364c"}">${z?"0":f2(h[j])}</text>`;}
+  for(let i=0;i<D;i++)g+=`<circle cx="450" cy="${yo(i)}" r="20" fill="${col(o[i],2)}" stroke="#315575"/><text x="450" y="${yo(i)+4}" text-anchor="middle" font-size="12">${f2(o[i])}</text>`;
+  g+=`<text x="50" y="290" text-anchor="middle" font-size="12" fill="#64748b">input (4)</text><text x="250" y="290" text-anchor="middle" font-size="12" fill="#64748b">${H} ReLU neurons</text><text x="450" y="290" text-anchor="middle" font-size="12" fill="#64748b">output + residual</text>`;
+  return `<svg viewBox="0 0 500 300">${g}</svg>`;
+}
+R[5]=r=>{const s=selIdx(r);const off=r.Hh[s].filter(v=>v===0).length;return `<h2><span class="n">5</span>Feed-forward: a small neural network for each token</h2>
+<div class="story">After gathering information from the other words, each token goes <b>on its own</b> through a small network of ${H} neurons. Each neuron is exactly the one from our neuron simulator: weighted sum + bias → activation (here ReLU: negative becomes 0). For “<b>${r.words[s]}</b>”, ${off} of ${H} neurons stay silent (0). The result is <b>added</b> back to the vector (residual connection), so the token keeps what it already knew.</div>
+${tokChips(r,s)}
+<div class="grid2"><div>${ffnSVG(r,s)}<div class="cap">Line colour = weight sign (blue +, red −), thickness = weight size. Silent neurons pass nothing on.</div></div>
+<div><h3>The calculation for “${r.words[s]}”</h3>
+<div class="eq">h = ReLU(x · W<sub>1</sub> + b<sub>1</sub>)</div>
+${mtab([r.Hpre[s],r.Hh[s]],["before ReLU","after ReLU"],Array.from({length:H},(_,j)=>"n"+(j+1)),{scale:2})}
+<div class="eq">neuron 1: ${r.X1[s].map((v,i)=>`${f2(v)}×${f2(W.W1[i][0])}`).join(" + ")} + ${f2(W.b1[0])} = ${f2(r.Hpre[s][0])} → ReLU → ${f2(r.Hh[s][0])}</div>
+<div class="eq">y = h · W<sub>2</sub> + b<sub>2</sub> = ${vecRow(r.F[s])}</div>
+<div class="eq">new vector = x + y = ${vecRow(r.X1[s])} + ${vecRow(r.F[s])} = <b>${vecRow(r.X2[s])}</b></div></div></div>
+<div class="real">In GPT-3 each feed-forward layer has 49,152 neurons per token, and about two-thirds of all the model’s parameters live here. Research suggests these layers act like a memory of facts (e.g. “France → Paris”).</div>`;};
+function probBars(p,k=10){const o=p.map((v,i)=>[v,i]).sort((a,b)=>b[0]-a[0]).slice(0,k);return `<div class="pbars">`+o.map(([v,i],n)=>`<span class="nm">${V[i]}</span><span class="t ${n===0?"w1":""}"><i style="width:${(v*100).toFixed(1)}%"></i></span><span>${pct(v)}</span>`).join("")+`</div>`;}
+R[6]=r=>{const x=r.X2[r.n-1];const p=softmax(r.logits,st.T);const o=p.map((v,i)=>[v,i]).sort((a,b)=>b[0]-a[0]);const best=o[0][1];
+return `<h2><span class="n">6</span>Output: compare with every word, turn scores into probabilities</h2>
+${st.attn?"":`<div class="alert"><b>Attention is OFF</b>, so the last token “${r.words[r.n-1]}” never saw the rest of the sentence. It only knows its own word and its position, so it cannot know which country we asked about: the prediction becomes meaningless. Attention is what lets information flow between words.</div>`}
+<div class="story">Only the <b>last</b> token’s vector is used to predict what comes next. It is compared with the vector of <b>every word in the vocabulary</b> using a dot product (multiply position by position and add up): the more similar, the higher the <b>score</b> (also called a logit). Softmax turns the ${V.length} scores into probabilities that add up to 100%. Winner: <b>“${V[best]}”</b> with ${pct(o[0][0])}.</div>
+<div class="eq">final vector of “${r.words[r.n-1]}” = <b>${vecRow(x)}</b></div>
+<div class="grid2"><div><h3>Top scores, step by step</h3>
+<table class="m"><tr><th class="rl">word</th><th>its vector</th><th>score = dot product</th><th>÷ T (${st.T.toFixed(1)})</th><th>probability</th></tr>
+${o.slice(0,6).map(([v,i])=>`<tr><th class="rl">${V[i]}</th><td>${vecRow(W.E[i])}</td><td>${f2(r.logits[i])}</td><td>${f2(r.logits[i]/st.T)}</td><td><b>${pct(v)}</b></td></tr>`).join("")}</table>
+<div class="eq">score(“${V[best]}”) = ${x.map((v,k)=>`${f2(v)}×${f2(W.E[best][k])}`).join(" + ")} = ${f2(r.logits[best])}</div>
+<div class="eq">P(w) = e<sup>score(w)/T</sup> / Σ e<sup>score/T</sup> over all ${V.length} words</div></div>
+<div><h3>Probability of the next word (top 10)</h3>${probBars(p)}
+<div class="cap"><b>Temperature T</b> divides the scores before softmax. T &lt; 1 makes the model more confident, T &gt; 1 spreads the probability over more words (more “creative”, more mistakes). Move the slider at the top.</div></div></div>
+<div class="real">GPT-3 does this comparison against 50,257 tokens at every single step. Like GPT-2, our model reuses the embedding matrix here (“weight tying”), so a word scores high when its embedding points in the same direction as the final vector.</div>`;};
+R[7]=r=>{const g=st.gen;const p=softmax(r.logits,st.T);const done=g.words[g.words.length-1]==="."||g.words.length>=LMAX;
+return `<h2><span class="n">7</span>Generate: append the word and run everything again</h2>
+<div class="story">A GPT writes text <b>one token at a time</b>: it predicts a word, glues it to the end of the sentence, and runs steps 1–6 again on the longer sentence. <b>Greedy</b> always takes the most likely word. <b>Sample</b> rolls a die weighted by the probabilities, so with a high temperature you may get a wrong answer.</div>
+<div class="sentence">${g.words.map((w,i)=>i>=g.start?`<span class="new">${w}</span>`:w).join(" ")} ${done?"":`<span class="blank">___</span>`}</div>
+<div class="bar"><button id="gGreedy" ${done?"disabled":""}>Next token (greedy)</button><button id="gSample" ${done?"disabled":""}>Next token (sample)</button><button id="gAuto" ${done?"disabled":""}>Run to the end</button><button id="gReset">Reset</button></div>
+<div class="grid2"><div><h3>${done?"Finished: the model produced “.” (end of sentence)":"Probabilities for the next token right now"}</h3>${done?"":probBars(p,6)}</div>
+<div><h3>History</h3><div class="log">${g.log.length?g.log.map(l=>`<div>“…${l.ctx}” → <b>${l.w}</b> (${pct(l.p)}, ${l.how})</div>`).join(""):"<div>Press a button to generate.</div>"}</div></div></div>
+<div class="real">This loop is why long answers take longer: each new token needs a full pass through the whole network. Real models reuse earlier Keys and Values (the “KV cache”) to save time.</div>`;};
+// ---------- render ----------
+function render(){
+  document.getElementById("steps").innerHTML=STEPS.map((s,i)=>`<button class="${st.step===i?"on":""}" data-step="${i}"><span class="k">${i}</span>${s}</button>`).join("");
+  if(st.step===7&&!st.gen)resetGen();
+  if(st.step!==7)st.gen=null;
+  const r=forward(curWords(),st.attn);
+  document.getElementById("stage").innerHTML=R[st.step](r);
+  const p=softmax(r.logits,st.T),b=p.indexOf(Math.max(...p));
+  document.getElementById("topline").innerHTML=(st.gen&&st.gen.log.length)?`Generated: <b style="color:#2f7d4a">${st.gen.words.slice(st.gen.start).join(" ")}</b>`:`Prediction: <b style="color:${st.attn?"#2f7d4a":"#b83b3b"}">${V[b]}</b> (${pct(p[b])})`;
+  document.getElementById("qline").textContent=promptWords().join(" ")+" ___ ?";
+  document.getElementById("country").disabled=st.prompt==="open";const ab=document.getElementById("attnBtn");ab.textContent="Attention: "+(st.attn?"ON":"OFF");ab.className=st.attn?"on":"off";
+  document.getElementById("back").disabled=st.step===0;document.getElementById("next").disabled=st.step===7;
+  drawArch();bindStage();
+}
+function resetGen(){const w=promptWords();st.gen={words:w.slice(),start:w.length,log:[]};}
+function genStep(how){const g=st.gen;if(g.words[g.words.length-1]==="."||g.words.length>=LMAX)return false;
+  const r=forward(g.words,st.attn);const p=softmax(r.logits,st.T);let i;
+  if(how==="greedy")i=p.indexOf(Math.max(...p));else{let u=Math.random(),c=0;i=p.length-1;for(let k=0;k<p.length;k++){c+=p[k];if(u<c){i=k;break;}}}
+  g.log.push({ctx:g.words.slice(-3).join(" "),w:V[i],p:p[i],how:how==="greedy"?"greedy":"sampled, T="+st.T.toFixed(1)});g.words.push(V[i]);return true;}
+function bindStage(){
+  document.querySelectorAll("[data-tok]").forEach(e=>e.onclick=()=>{st.sel=+e.dataset.tok;render();});
+  document.querySelectorAll("[data-row]").forEach(e=>e.onclick=()=>{st.sel=+e.dataset.row;render();});
+  const q=id=>document.getElementById(id);
+  if(q("gGreedy")){q("gGreedy").onclick=()=>{genStep("greedy");render();};q("gSample").onclick=()=>{genStep("sample");render();};
+    q("gAuto").onclick=()=>{let k=0;while(k++<LMAX&&genStep("greedy"));render();};q("gReset").onclick=()=>{resetGen();render();};}
+}
+document.getElementById("steps").onclick=e=>{const b=e.target.closest("[data-step]");if(b){st.step=+b.dataset.step;render();}};
+document.getElementById("back").onclick=()=>{if(st.step>0){st.step--;render();}};
+document.getElementById("next").onclick=()=>{if(st.step<7){st.step++;render();}};
+document.addEventListener("keydown",e=>{if(e.target.tagName==="SELECT"||e.target.tagName==="INPUT")return;if(e.key==="ArrowRight"&&st.step<7){st.step++;render();}if(e.key==="ArrowLeft"&&st.step>0){st.step--;render();}});
+const ps=document.getElementById("prompt");ps.innerHTML=PROMPTS.map(p=>`<option value="${p.k}">${p.lab}</option>`).join("");
+ps.onchange=()=>{st.prompt=ps.value;st.sel=null;st.gen=null;render();};
+const cs=document.getElementById("country");cs.innerHTML=COUNTRIES.map((c,i)=>`<option value="${i}">${c[0]}</option>`).join("");
+cs.onchange=()=>{st.country=+cs.value;st.gen=null;render();};
+document.getElementById("attnBtn").onclick=()=>{st.attn=!st.attn;if(st.gen)resetGen();render();};
+const ts=document.getElementById("temp");ts.oninput=()=>{st.T=+ts.value;document.getElementById("tempv").textContent=st.T.toFixed(1);render();};
+document.getElementById("full").onclick=()=>{document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen();};
+render();
+</script>
+</body>
+</html>
