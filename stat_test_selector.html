@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Which statistical test should I use? · Vibe-Modeling course</title>
+<style>
+:root{--red:#922929;--ink:#1f1f1f;--ink2:#4d4d4d;--g0:#f5f5f5;--g1:#ededed;--g2:#e2e2e2;--g3:#d3d3d3;--g4:#b5b5b5;--g5:#8a8a8a;--g6:#5e5e5e;--bg:#fafafa}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:clamp(14px,1vw,19px)/1.4 Calibri,Carlito,"Segoe UI",Arial,sans-serif}
+main{max-width:1700px;margin:auto;padding:1em 2vw 2em}
+header{border-bottom:2px solid var(--red);padding-bottom:.55em;display:flex;justify-content:space-between;align-items:flex-end;gap:1em;flex-wrap:wrap}
+.kicker{color:var(--g5);font-size:.78em;letter-spacing:.12em;text-transform:uppercase;font-weight:bold}
+h1{font-family:Cambria,Caladea,Georgia,serif;font-size:clamp(24px,2.2vw,42px);margin:.1em 0;line-height:1.1}
+.sub{color:var(--red);font-style:italic;font-size:1.05em}
+.presets{display:flex;gap:.4em;flex-wrap:wrap;align-items:center;font-size:.85em;color:var(--g6)}
+button{font:inherit;cursor:pointer;border:1px solid var(--g4);background:#fff;color:var(--ink);border-radius:8px;padding:.45em .75em}
+button:hover{background:var(--g1)}
+button.on{background:var(--g6);color:#fff;border-color:var(--g6)}
+button:disabled{opacity:.35;cursor:default;background:#fff}
+.layout{display:grid;grid-template-columns:minmax(330px,0.95fr) 1.25fr;gap:1.1em;margin-top:1em;align-items:start}
+.panel{background:#fff;border:1px solid var(--g3);border-radius:12px;padding:.9em 1.1em}
+.step{padding:.55em 0 .7em;border-bottom:1px dashed var(--g3)}
+.step:last-child{border-bottom:0}
+.step h2{font-size:1em;margin:0 0 .35em;display:flex;gap:.5em;align-items:center}
+.step h2 .n{display:inline-grid;place-items:center;width:1.55em;height:1.55em;border-radius:50%;background:var(--g2);color:var(--ink);font-size:.85em}
+.step.done h2 .n{background:var(--g6);color:#fff}
+.step.off{opacity:.4}
+.opts{display:flex;flex-wrap:wrap;gap:.35em}
+.opts button{font-size:.88em;text-align:left}
+.help{font-size:.82em;color:var(--g6);margin:.35em 0 0}
+.design{display:grid;grid-template-columns:1fr 1fr;gap:.6em;margin-top:.5em}
+.design figure{margin:0;background:var(--g0);border-radius:8px;padding:.4em .5em;font-size:.8em;color:var(--ink2)}
+.design figure b{color:var(--ink)}
+.design svg{width:100%;height:6em;display:block}
+.path{font-size:.9em;background:var(--g0);border-radius:8px;padding:.5em .8em;margin-bottom:.7em;color:var(--ink2)}
+.path b{color:var(--ink)}
+.result{border:1px solid var(--g3);border-radius:12px;padding:.8em 1em;margin-bottom:.8em;background:#fff}
+.result h3{font-family:Cambria,Caladea,Georgia,serif;font-size:1.45em;margin:.05em 0 .25em}
+.tags{display:flex;gap:.35em;flex-wrap:wrap;margin-bottom:.45em}
+.tag{font-size:.72em;letter-spacing:.08em;text-transform:uppercase;font-weight:bold;background:var(--g1);color:var(--g6);padding:.2em .55em;border-radius:20px}
+.q{font-size:1.05em;margin:.2em 0 .4em}
+.ex{font-style:italic;color:var(--ink2);margin:.2em 0 .5em}
+.alt{font-size:.9em;background:var(--g0);border-left:3px solid var(--g4);padding:.35em .7em;border-radius:0 6px 6px 0;margin:.3em 0 .6em}
+.cmds{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.45em}
+.cmd{background:var(--g0);border-radius:8px;padding:.35em .6em}
+.cmd .sw{font-size:.7em;letter-spacing:.1em;font-weight:bold;color:var(--g5)}
+.cmd.py{grid-column:1/-1}
+.cmd code{display:block;font:.82em/1.35 Consolas,"Courier New",monospace;color:var(--ink);white-space:pre-wrap;word-break:break-word}
+.empty{color:var(--g6);font-style:italic;padding:1.2em .4em}
+.warn{font-size:.9em;background:#fbf3f3;border-left:3px solid var(--red);padding:.45em .8em;border-radius:0 6px 6px 0}
+.tabs{display:flex;gap:.4em;margin:1.4em 0 .6em}
+table{width:100%;border-collapse:collapse;font-size:.86em;background:#fff}
+th{background:var(--g6);color:#fff;text-align:left;padding:.45em .5em;font-size:.85em;letter-spacing:.04em}
+td{border-bottom:1px solid var(--g2);padding:.4em .5em;vertical-align:top}
+tr:nth-child(even) td{background:var(--g0)}
+tr.hit td{background:#f6eded}
+td code{font:.85em Consolas,monospace}
+.gl{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:.6em}
+.gl div{background:#fff;border:1px solid var(--g3);border-radius:10px;padding:.55em .8em;font-size:.92em}
+.gl b{display:block;margin-bottom:.15em}
+.filters{display:flex;gap:.35em;flex-wrap:wrap;margin-bottom:.5em}
+.filters button{font-size:.82em}
+footer{margin-top:1.4em;font-size:.8em;color:var(--g5)}
+footer a{color:var(--g6)}
+.term{border-bottom:1px dotted var(--g5);cursor:help}
+@media(max-width:900px){.layout{grid-template-columns:1fr}.cmds{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<main>
+<header>
+  <div>
+    <div class="kicker">Block 1 · The statistical toolbox</div>
+    <h1>Which statistical test should I use?</h1>
+    <div class="sub">Answer four questions about your variables; the guide narrows the technique.</div>
+  </div>
+  <div class="presets"><span>Try an example:</span><span id="presets"></span><button id="reset">Reset</button></div>
+</header>
+
+<div class="layout">
+  <section class="panel" id="steps"></section>
+  <section>
+    <div class="path" id="path"></div>
+    <div id="results"></div>
+  </section>
+</div>
+
+<div class="tabs"><button id="tabAll" class="on">All techniques</button><button id="tabGloss">Glossary</button></div>
+<section id="allView">
+  <div class="filters" id="filters"></div>
+  <div style="overflow-x:auto"><table id="allTable"></table></div>
+</section>
+<section id="glossView" style="display:none"><div class="gl" id="gloss"></div></section>
+
+<footer>
+  Selection logic and commands follow the UCLA OARC guide <a href="https://stats.oarc.ucla.edu/other/mult-pkg/whatstat/" target="_blank" rel="noopener">“What statistical analysis should I use?”</a>
+  (<a href="https://stats.oarc.ucla.edu/spss/whatstat/what-statistical-analysis-should-i-usestatistical-analyses-using-spss/" target="_blank" rel="noopener">SPSS</a> · <a href="https://stats.oarc.ucla.edu/r/whatstat/what-statistical-analysis-should-i-usestatistical-analyses-using-r/" target="_blank" rel="noopener">R</a> · <a href="https://stats.oarc.ucla.edu/stata/whatstat/what-statistical-analysis-should-i-usestatistical-analyses-using-stata/" target="_blank" rel="noopener">Stata</a> · <a href="https://stats.oarc.ucla.edu/sas/whatstat/what-statistical-analysis-should-i-usestatistical-analyses-using-sas/" target="_blank" rel="noopener">SAS</a>).
+  Python uses pandas (pd), scipy.stats (st), statsmodels (sm, smf) and, where noted, scikit-learn. Variable names in the commands are generic (y = outcome, x = numerical predictor, g = group). Explanations and work-climate examples are illustrative; no data are shown.
+  The guide is a starting point: the final choice also depends on the design, the sample and the assumptions you check.
+</footer>
+</main>
+
+<script>
+const TESTS = [{"id": "t1", "name": "One-sample t-test", "family": "Compare with a known value", "n_dv": "1", "iv": "None (one population)", "design": "One sample", "dv": "Interval & normal", "kind": "Parametric", "question": "Is the mean different from a reference value?", "example": "Is mean morale different from the scale midpoint?", "counterpart": "One-sample median test", "spss": "T-TEST /TESTVAL=50 /VARIABLES=y.", "r": "t.test(y, mu = 50)", "stata": "ttest y = 50", "sas": "proc ttest h0=50; var y;", "python": "st.ttest_1samp(df.y, popmean=50)"}, {"id": "med1", "name": "One-sample median test", "family": "Compare with a known value", "n_dv": "1", "iv": "None (one population)", "design": "One sample", "dv": "Ordinal or interval", "kind": "Nonparametric", "question": "Is the median different from a reference value?", "example": "Is the median answer to one Likert item different from 'neutral'?", "counterpart": "One-sample t-test", "spss": "NPTESTS /ONESAMPLE TEST (y) WILCOXON(TESTVALUE=50).", "r": "wilcox.test(y, mu = 50)", "stata": "signrank y = 50", "sas": "proc univariate loccount mu0=50; var y;", "python": "st.wilcoxon(df.y - 50)"}, {"id": "binom", "name": "Binomial test", "family": "Compare with a known value", "n_dv": "1", "iv": "None (one population)", "design": "One sample", "dv": "Categorical (2 categories)", "kind": "Categorical", "question": "Is a proportion different from a reference proportion?", "example": "Is the share of staff who would recommend the firm different from one half?", "counterpart": "Chi-square goodness of fit (3+ categories)", "spss": "NPAR TESTS /BINOMIAL (.5) = y.", "r": "prop.test(sum(y), length(y), p = 0.5)", "stata": "bitest y = .5", "sas": "proc freq; tables y / binomial(p=.5); exact binomial;", "python": "st.binomtest(k=df.y.sum(), n=len(df), p=0.5)"}, {"id": "gof", "name": "Chi-square goodness of fit", "family": "Compare with a known value", "n_dv": "1", "iv": "None (one population)", "design": "One sample", "dv": "Categorical", "kind": "Categorical", "question": "Do the category shares match the expected shares?", "example": "Does the mix of departments in the sample match the firm's official mix?", "counterpart": "Binomial test (2 categories)", "spss": "NPAR TESTS /CHISQUARE = y /EXPECTED = 10 10 10 70.", "r": "chisq.test(table(y), p = c(.1, .1, .1, .7))", "stata": "csgof y, expperc(10 10 10 70)  (user-written)", "sas": "proc freq; tables y / chisq testp=(10 10 10 70);", "python": "st.chisquare(df.y.value_counts().sort_index(), f_exp=expected_counts)"}, {"id": "t2", "name": "Independent-samples t-test", "family": "Compare groups", "n_dv": "1", "iv": "1 categorical, 2 levels", "design": "Independent groups", "dv": "Interval & normal", "kind": "Parametric", "question": "Do two separate groups differ in their mean?", "example": "Is mean morale different at head office and at the branches?", "counterpart": "Mann-Whitney (Wilcoxon rank-sum) test", "spss": "T-TEST GROUPS = g(0 1) /VARIABLES = y.", "r": "t.test(y ~ g)", "stata": "ttest y, by(g)", "sas": "proc ttest; class g; var y;", "python": "st.ttest_ind(df.y[df.g == 0], df.y[df.g == 1])  # equal_var=False for Welch"}, {"id": "mw", "name": "Mann-Whitney (Wilcoxon rank-sum) test", "family": "Compare groups", "n_dv": "1", "iv": "1 categorical, 2 levels", "design": "Independent groups", "dv": "Ordinal or interval", "kind": "Nonparametric", "question": "Do two separate groups differ in their distribution (ranks)?", "example": "Do head office and branch staff answer one Likert item differently?", "counterpart": "Independent-samples t-test", "spss": "NPAR TESTS /M-W = y BY g(0 1).", "r": "wilcox.test(y ~ g)", "stata": "ranksum y, by(g)", "sas": "proc npar1way wilcoxon; class g; var y;", "python": "st.mannwhitneyu(df.y[df.g == 0], df.y[df.g == 1])"}, {"id": "chi", "name": "Chi-square test of independence", "family": "Associate", "n_dv": "1", "iv": "1 categorical, 2+ levels", "design": "Independent groups", "dv": "Categorical", "kind": "Categorical", "question": "Are two categorical variables related?", "example": "Is the intention to leave (yes / no) related to department?", "counterpart": "Fisher's exact test (small expected counts)", "spss": "CROSSTABS /TABLES = y BY g /STATISTICS = CHISQ.", "r": "chisq.test(table(y, g))", "stata": "tabulate y g, chi2", "sas": "proc freq; tables y*g / chisq;", "python": "st.chi2_contingency(pd.crosstab(df.y, df.g))"}, {"id": "fisher", "name": "Fisher's exact test", "family": "Associate", "n_dv": "1", "iv": "1 categorical, 2+ levels", "design": "Independent groups", "dv": "Categorical", "kind": "Categorical", "question": "Same question as chi-square, when some expected cell counts are small (below 5).", "example": "Intention to leave by department in a small firm.", "counterpart": "Chi-square test of independence", "spss": "CROSSTABS /TABLES = y BY g /STATISTICS = CHISQ.  (Fisher shown for 2x2)", "r": "fisher.test(table(y, g))", "stata": "tabulate y g, exact", "sas": "proc freq; tables y*g / fisher;", "python": "st.fisher_exact(pd.crosstab(df.y, df.g))  # 2x2 (SciPy >= 1.15 also r x c)"}, {"id": "anova1", "name": "One-way ANOVA", "family": "Compare groups", "n_dv": "1", "iv": "1 categorical, 3+ levels", "design": "Independent groups", "dv": "Interval & normal", "kind": "Parametric", "question": "Do three or more separate groups differ in their mean?", "example": "Does mean morale differ across four departments?", "counterpart": "Kruskal-Wallis test", "spss": "ONEWAY y BY g.", "r": "summary(aov(y ~ g))", "stata": "anova y g", "sas": "proc glm; class g; model y = g;", "python": "st.f_oneway(*[d.y for _, d in df.groupby('g')])"}, {"id": "kw", "name": "Kruskal-Wallis test", "family": "Compare groups", "n_dv": "1", "iv": "1 categorical, 3+ levels", "design": "Independent groups", "dv": "Ordinal or interval", "kind": "Nonparametric", "question": "Do three or more separate groups differ in their distribution (ranks)?", "example": "Do four departments answer one Likert item differently?", "counterpart": "One-way ANOVA", "spss": "NPAR TESTS /K-W = y BY g(1 4).", "r": "kruskal.test(y ~ g)", "stata": "kwallis y, by(g)", "sas": "proc npar1way; class g; var y;", "python": "st.kruskal(*[d.y for _, d in df.groupby('g')])"}, {"id": "tp", "name": "Paired t-test", "family": "Compare groups", "n_dv": "1", "iv": "1 categorical, 2 levels", "design": "Paired (same units twice)", "dv": "Interval & normal", "kind": "Parametric", "question": "Do the same units change in mean between two moments or conditions?", "example": "Does morale change from before to after a training programme (same employees)?", "counterpart": "Wilcoxon signed-rank test", "spss": "T-TEST PAIRS = before WITH after (PAIRED).", "r": "t.test(before, after, paired = TRUE)", "stata": "ttest before = after", "sas": "proc ttest; paired before*after;", "python": "st.ttest_rel(df.before, df.after)"}, {"id": "wsr", "name": "Wilcoxon signed-rank test", "family": "Compare groups", "n_dv": "1", "iv": "1 categorical, 2 levels", "design": "Paired (same units twice)", "dv": "Ordinal or interval", "kind": "Nonparametric", "question": "Do the same units change between two moments, using ranks?", "example": "Does the answer to one Likert item change after the training (same employees)?", "counterpart": "Paired t-test", "spss": "NPAR TESTS /WILCOXON = before WITH after (PAIRED).", "r": "wilcox.test(before, after, paired = TRUE)", "stata": "signrank before = after", "sas": "data: diff = before - after; proc univariate; var diff;", "python": "st.wilcoxon(df.before, df.after)"}, {"id": "mcn", "name": "McNemar test", "family": "Compare groups", "n_dv": "1", "iv": "1 categorical, 2 levels", "design": "Paired (same units twice)", "dv": "Categorical (2 categories)", "kind": "Categorical", "question": "Do the same units change a yes / no answer between two moments?", "example": "Does the share who intend to leave change after the training (same employees)?", "counterpart": "(no parametric counterpart)", "spss": "CROSSTABS /TABLES = before BY after /STATISTICS = MCNEMAR.", "r": "mcnemar.test(table(before, after))", "stata": "mcc before after", "sas": "proc freq; tables before*after; exact mcnem;", "python": "from statsmodels.stats.contingency_tables import mcnemar\nmcnemar(pd.crosstab(df.before, df.after))"}, {"id": "rmanova", "name": "Repeated-measures ANOVA", "family": "Compare groups", "n_dv": "1", "iv": "1 categorical, 3+ levels", "design": "Paired (same units twice)", "dv": "Interval & normal", "kind": "Parametric", "question": "Do the same units change in mean across three or more moments?", "example": "Does morale change across three survey waves (same employees)?", "counterpart": "Friedman test", "spss": "GLM t1 t2 t3 /WSFACTOR = time 3.", "r": "car::Anova(lm(cbind(t1, t2, t3) ~ 1), idata = data.frame(time = factor(1:3)), idesign = ~time)", "stata": "anova y time id, repeated(time)", "sas": "proc glm; model t1 t2 t3 = ; repeated time;", "python": "from statsmodels.stats.anova import AnovaRM\nAnovaRM(long, depvar='y', subject='id', within=['time']).fit()"}, {"id": "fried", "name": "Friedman test", "family": "Compare groups", "n_dv": "1", "iv": "1 categorical, 3+ levels", "design": "Paired (same units twice)", "dv": "Ordinal or interval", "kind": "Nonparametric", "question": "Do the same units change across three or more moments, using ranks?", "example": "Does one Likert item change across three survey waves?", "counterpart": "Repeated-measures ANOVA", "spss": "NPAR TESTS /FRIEDMAN = t1 t2 t3.", "r": "friedman.test(cbind(t1, t2, t3))", "stata": "friedman (user-written, after xpose)", "sas": "proc freq; tables id*time*y / cmh2 scores=rank noprint;", "python": "st.friedmanchisquare(df.t1, df.t2, df.t3)"}, {"id": "rmlogit", "name": "Repeated-measures logistic regression", "family": "Model an outcome", "n_dv": "1", "iv": "1 categorical, 3+ levels", "design": "Paired (same units twice)", "dv": "Categorical (2 categories)", "kind": "Model", "question": "Does a yes / no outcome change across three or more moments for the same units?", "example": "Does intention to leave (yes / no) change across three waves?", "counterpart": "(McNemar for 2 moments)", "spss": "GENLIN y BY time /MODEL time DISTRIBUTION=BINOMIAL LINK=LOGIT /REPEATED SUBJECT=id.", "r": "lme4::glmer(y ~ time + (1 | id), family = binomial)", "stata": "xtset id; xtgee y i.time, family(binomial) link(logit)", "sas": "proc genmod; class id time; model y = time / dist=bin link=logit; repeated subject=id;", "python": "smf.gee('y ~ C(time)', groups='id', data=long, family=sm.families.Binomial()).fit()"}, {"id": "fanova", "name": "Factorial ANOVA", "family": "Compare groups", "n_dv": "1", "iv": "2+ categorical", "design": "Independent groups", "dv": "Interval & normal", "kind": "Parametric", "question": "Do two or more grouping factors (and their interaction) affect the mean?", "example": "Does morale depend on department, contract type and their combination?", "counterpart": "(ordered logistic if the outcome is ordinal)", "spss": "GLM y BY g1 g2.", "r": "anova(lm(y ~ g1 * g2))", "stata": "anova y g1##g2", "sas": "proc glm; class g1 g2; model y = g1 g2 g1*g2;", "python": "sm.stats.anova_lm(smf.ols('y ~ C(g1) * C(g2)', df).fit(), typ=2)"}, {"id": "ologit", "name": "Ordered logistic regression", "family": "Model an outcome", "n_dv": "1", "iv": "2+ categorical (or mixed)", "design": "Independent groups", "dv": "Ordinal or interval", "kind": "Model", "question": "Which factors shift an ordered outcome (low / medium / high) up or down?", "example": "Which factors predict satisfaction in three ordered levels?", "counterpart": "Factorial ANOVA (interval outcome)", "spss": "PLUM y BY g1 g2 /LINK = LOGIT /PRINT = TPARALLEL.", "r": "MASS::polr(y ~ g1 + g2, Hess = TRUE)", "stata": "ologit y g1 g2", "sas": "proc logistic desc; model y = g1 g2;", "python": "from statsmodels.miscmodels.ordinal_model import OrderedModel\nOrderedModel.from_formula('y ~ C(g1) + C(g2)', df, distr='logit').fit()  # y: ordered categorical"}, {"id": "flogit", "name": "Factorial logistic regression", "family": "Model an outcome", "n_dv": "1", "iv": "2+ categorical", "design": "Independent groups", "dv": "Categorical (2 categories)", "kind": "Model", "question": "Do two or more grouping factors (and their interaction) change the odds of a yes / no outcome?", "example": "Does intention to leave depend on department, contract type and their combination?", "counterpart": "(no nonparametric counterpart)", "spss": "LOGISTIC REGRESSION y WITH g1 g2 g1*g2 /CONTRAST(g1) = INDICATOR.", "r": "glm(y ~ g1 * g2, family = binomial)", "stata": "logit y i.g1##i.g2", "sas": "proc logistic desc; class g1 g2; model y = g1 g2 g1*g2;", "python": "smf.logit('y ~ C(g1) * C(g2)', df).fit()"}, {"id": "corr", "name": "Pearson correlation", "family": "Associate", "n_dv": "1", "iv": "1 numerical (interval)", "design": "One sample, two measures", "dv": "Interval & normal", "kind": "Parametric", "question": "Do two numerical variables move together in a straight line? How strongly?", "example": "Is morale related to perceived management support?", "counterpart": "Spearman correlation", "spss": "CORRELATIONS /VARIABLES = x y.", "r": "cor.test(x, y)", "stata": "corr x y  (pwcorr x y, sig)", "sas": "proc corr; var x y;", "python": "st.pearsonr(df.x, df.y)"}, {"id": "slr", "name": "Simple linear regression", "family": "Model an outcome", "n_dv": "1", "iv": "1 numerical (interval)", "design": "One sample, two measures", "dv": "Interval & normal", "kind": "Parametric", "question": "How much does the outcome change per unit of one predictor?", "example": "How much higher is morale per point of management support?", "counterpart": "(Spearman correlation for ranks)", "spss": "REGRESSION /DEPENDENT = y /METHOD = ENTER x.", "r": "summary(lm(y ~ x))", "stata": "regress y x", "sas": "proc reg; model y = x;", "python": "smf.ols('y ~ x', df).fit().summary()"}, {"id": "spear", "name": "Spearman correlation", "family": "Associate", "n_dv": "1", "iv": "1 numerical (interval)", "design": "One sample, two measures", "dv": "Ordinal or interval", "kind": "Nonparametric", "question": "Do two variables move together in the same direction (monotonic), using ranks?", "example": "Is one Likert item related to another Likert item?", "counterpart": "Pearson correlation", "spss": "NONPAR CORR /VARIABLES = x y /PRINT = SPEARMAN.", "r": "cor.test(x, y, method = \"spearman\")", "stata": "spearman x y", "sas": "proc corr spearman; var x y;", "python": "st.spearmanr(df.x, df.y)"}, {"id": "slogit", "name": "Simple logistic regression", "family": "Model an outcome", "n_dv": "1", "iv": "1 numerical (interval)", "design": "One sample, two measures", "dv": "Categorical (2 categories)", "kind": "Model", "question": "How does one numerical predictor change the probability of a yes / no outcome?", "example": "Does management support lower the probability of intending to leave?", "counterpart": "(no nonparametric counterpart)", "spss": "LOGISTIC REGRESSION y WITH x.", "r": "glm(y ~ x, family = binomial)", "stata": "logistic y x", "sas": "proc logistic desc; model y = x;", "python": "smf.logit('y ~ x', df).fit().summary()"}, {"id": "mlr", "name": "Multiple regression", "family": "Model an outcome", "n_dv": "1", "iv": "Several, numerical and/or categorical", "design": "One sample, many measures", "dv": "Interval & normal", "kind": "Parametric", "question": "How do several predictors relate to one numerical outcome, each holding the others constant?", "example": "What predicts morale: support, autonomy and seniority together?", "counterpart": "(robust or ordinal models if assumptions fail)", "spss": "REGRESSION /DEPENDENT = y /METHOD = ENTER x1 x2 x3.", "r": "summary(lm(y ~ x1 + x2 + x3))", "stata": "regress y x1 x2 x3", "sas": "proc reg; model y = x1 x2 x3;", "python": "smf.ols('y ~ x1 + x2 + x3', df).fit().summary()"}, {"id": "ancova", "name": "Analysis of covariance (ANCOVA)", "family": "Compare groups", "n_dv": "1", "iv": "Several, numerical and/or categorical", "design": "Independent groups + covariate", "dv": "Interval & normal", "kind": "Parametric", "question": "Do groups differ in their mean after adjusting for a numerical covariate?", "example": "Do departments differ in morale once seniority is taken into account?", "counterpart": "(multiple regression with group dummies)", "spss": "GLM y BY g WITH x.", "r": "summary(aov(y ~ g + x))", "stata": "anova y g c.x", "sas": "proc glm; class g; model y = g x;", "python": "sm.stats.anova_lm(smf.ols('y ~ C(g) + x', df).fit(), typ=2)"}, {"id": "mlogit", "name": "Multiple logistic regression", "family": "Model an outcome", "n_dv": "1", "iv": "Several, numerical and/or categorical", "design": "One sample, many measures", "dv": "Categorical (2 categories)", "kind": "Model", "question": "How do several predictors change the probability of a yes / no outcome?", "example": "What predicts intention to leave: support, autonomy and seniority together?", "counterpart": "Discriminant analysis", "spss": "LOGISTIC REGRESSION y WITH x1 x2.", "r": "glm(y ~ x1 + x2, family = binomial)", "stata": "logistic y x1 x2", "sas": "proc logistic desc; model y = x1 x2;", "python": "smf.logit('y ~ x1 + x2', df).fit().summary()"}, {"id": "disc", "name": "Discriminant analysis", "family": "Multivariate", "n_dv": "1", "iv": "Several numerical", "design": "Known groups", "dv": "Categorical", "kind": "Multivariate", "question": "Which combination of variables best separates known groups?", "example": "Which climate dimensions separate staff who stay from staff who leave?", "counterpart": "Multiple logistic regression", "spss": "DISCRIMINANT /GROUPS = g(1 3) /VARIABLES = x1 x2 x3.", "r": "MASS::lda(g ~ x1 + x2 + x3)", "stata": "candisc x1 x2 x3, group(g)  (UCLA uses daoneway)", "sas": "proc discrim can; class g; var x1 x2 x3;", "python": "from sklearn.discriminant_analysis import LinearDiscriminantAnalysis\nLinearDiscriminantAnalysis().fit(df[['x1','x2','x3']], df.g)"}, {"id": "manova", "name": "One-way MANOVA", "family": "Multivariate", "n_dv": "2+", "iv": "1 categorical, 2+ levels", "design": "Independent groups", "dv": "Interval & normal", "kind": "Multivariate", "question": "Do groups differ on several numerical outcomes considered together?", "example": "Do departments differ on morale, autonomy and satisfaction at once?", "counterpart": "(separate ANOVAs, with correction)", "spss": "GLM y1 y2 y3 BY g.", "r": "summary(manova(cbind(y1, y2, y3) ~ g))", "stata": "manova y1 y2 y3 = g", "sas": "proc glm; class g; model y1 y2 y3 = g; manova h=g;", "python": "from statsmodels.multivariate.manova import MANOVA\nMANOVA.from_formula('y1 + y2 + y3 ~ C(g)', df).mv_test()"}, {"id": "mmr", "name": "Multivariate multiple regression", "family": "Multivariate", "n_dv": "2+", "iv": "2+ (numerical and/or categorical)", "design": "One sample, many measures", "dv": "Interval & normal", "kind": "Multivariate", "question": "How do several predictors relate to several numerical outcomes at once?", "example": "Do support and autonomy predict both morale and satisfaction?", "counterpart": "(separate multiple regressions)", "spss": "GLM y1 y2 WITH x1 x2.", "r": "car::Anova(lm(cbind(y1, y2) ~ x1 + x2))", "stata": "mvreg y1 y2 = x1 x2", "sas": "proc reg; model y1 y2 = x1 x2; mtest;", "python": "from statsmodels.multivariate.manova import MANOVA\nMANOVA.from_formula('y1 + y2 ~ x1 + x2', df).mv_test()"}, {"id": "fa", "name": "Factor analysis (and PCA)", "family": "Multivariate", "n_dv": "2+", "iv": "None", "design": "One sample, many items", "dv": "Interval & normal", "kind": "Multivariate", "question": "Which items measure the same underlying dimension?", "example": "Do the 73 items of a climate scale group into a smaller set of dimensions?", "counterpart": "(PCA summarizes variance; factor analysis models shared variance)", "spss": "FACTOR /VARIABLES = i1 TO i10 /EXTRACTION = PAF /ROTATION = VARIMAX.", "r": "psych::fa(items, nfactors = 2)  ·  princomp(items)", "stata": "factor i1-i10  (pca i1-i10)", "sas": "proc factor; var i1-i10;", "python": "from sklearn.decomposition import FactorAnalysis, PCA\nFactorAnalysis(n_components=2, rotation='varimax').fit(items)  # or PCA(n_components=2)"}, {"id": "cc", "name": "Canonical correlation", "family": "Multivariate", "n_dv": "2 sets", "iv": "None (two sets of variables)", "design": "One sample, two sets", "dv": "Interval & normal", "kind": "Multivariate", "question": "How strongly are two sets of variables related?", "example": "How is a set of climate dimensions related to a set of performance indicators?", "counterpart": "(several correlations)", "spss": "MANOVA y1 y2 WITH x1 x2 /DISCRIM ALL ALPHA(1).", "r": "CCA::cc(cbind(y1, y2), cbind(x1, x2))", "stata": "canon (y1 y2) (x1 x2)", "sas": "proc cancorr all; var y1 y2; with x1 x2;", "python": "from sklearn.cross_decomposition import CCA\nCCA(n_components=2).fit(df[['y1','y2']], df[['x1','x2']])"}];
+const RULES = {"1|none|na|interval": ["t1"], "1|none|na|ordinal": ["med1"], "1|none|na|cat2": ["binom", "gof"], "1|none|na|cat": ["gof"], "1|cat2|indep|interval": ["t2"], "1|cat2|indep|ordinal": ["mw"], "1|cat2|indep|cat2": ["chi", "fisher"], "1|cat2|indep|cat": ["chi", "fisher"], "1|cat3|indep|interval": ["anova1"], "1|cat3|indep|ordinal": ["kw"], "1|cat3|indep|cat2": ["chi", "fisher"], "1|cat3|indep|cat": ["chi", "fisher"], "1|cat2|paired|interval": ["tp"], "1|cat2|paired|ordinal": ["wsr"], "1|cat2|paired|cat2": ["mcn"], "1|cat3|paired|interval": ["rmanova"], "1|cat3|paired|ordinal": ["fried"], "1|cat3|paired|cat2": ["rmlogit"], "1|catmany|indep|interval": ["fanova"], "1|catmany|indep|ordinal": ["ologit"], "1|catmany|indep|cat2": ["flogit"], "1|num1|na|interval": ["corr", "slr"], "1|num1|na|ordinal": ["spear"], "1|num1|na|cat2": ["slogit"], "1|mixed|na|interval": ["mlr", "ancova"], "1|mixed|na|cat2": ["mlogit", "disc"], "1|mixed|na|cat": ["disc"], "2+|cat3|indep|interval": ["manova"], "2+|cat2|indep|interval": ["manova"], "2+|mixed|na|interval": ["mmr"], "2+|none|na|interval": ["fa"], "sets|none|na|interval": ["cc"]};
+const GLOSS = [["Dependent variable (outcome)", "What you want to explain or compare: the Y. It is the variable whose type decides most of the choice."], ["Independent variable (predictor, factor)", "What you use to explain or to form the groups: the X. In machine learning, a feature."], ["Levels", "The categories of a categorical independent variable. Head office / branches = 2 levels; four departments = 4 levels."], ["Independent samples", "Different units in each group: each employee belongs to only one department. The groups do not share people."], ["Paired (dependent) samples", "The same units measured twice or more (before / after, wave 1 / 2 / 3), or matched pairs. Each value has a partner."], ["Interval & normal", "A numerical outcome with equal distances between values, where the model's errors (residuals) are roughly normal. UCLA notes that normality concerns the errors, not the raw variable, and many tests are robust in large samples."], ["Ordinal", "Ordered categories with unknown distances (a single Likert item, ranks). Also numerical data that are clearly not normal."], ["Categorical (nominal)", "Categories without order (department, yes / no). With 2 categories it is called binary or dichotomous."], ["Parametric test", "Assumes a distribution for the errors (usually normal) and works with means: t-test, ANOVA, Pearson, regression."], ["Nonparametric test", "Makes fewer assumptions and usually works with ranks or medians: Mann-Whitney, Wilcoxon, Kruskal-Wallis, Friedman, Spearman. Use it when the outcome is ordinal or clearly not normal."], ["t-test", "Compares two means (one group against a value, two separate groups, or the same group twice)."], ["ANOVA", "Analysis of variance: compares three or more means at once. Factorial ANOVA adds a second factor and the interaction; repeated-measures ANOVA uses the same units over time."], ["Chi-square test", "Compares observed and expected counts in a table of categories. Fisher's exact test does the same with small counts; McNemar does it for paired yes / no answers."], ["Correlation", "Pearson's r measures a straight-line relation between two numerical variables; Spearman's rho uses ranks and captures any monotonic relation."], ["Regression", "Models an outcome from one or more predictors. Linear for numerical outcomes, logistic for yes / no outcomes, ordered logistic for ordered categories."], ["Covariate (ANCOVA)", "A numerical variable you adjust for when comparing groups, so groups are compared on equal terms."], ["Multivariate", "Several outcome variables at once (MANOVA, multivariate regression) or many variables summarized together (factor analysis, canonical correlation)."]];
+const byId = Object.fromEntries(TESTS.map(t => [t.id, t]));
+
+const STEPS = [
+  {key:"ndv", title:"How many outcome (dependent) variables?",
+   help:"The outcome is what you want to explain or compare (Y).",
+   opts:[["1","One outcome"],["2+","Two or more outcomes"],["sets","Two sets of variables"]]},
+  {key:"iv", title:"What is the independent variable (X)?",
+   help:"Categorical X forms groups; numerical X is a score or amount.",
+   opts:[["none","None: compare with a known value / summarize"],["cat2","One categorical, 2 groups"],["cat3","One categorical, 3+ groups"],["catmany","Two or more categorical"],["num1","One numerical"],["mixed","Several, numerical and/or categorical"]]},
+  {key:"design", title:"Are the groups independent or paired?",
+   help:"Only matters when X forms groups.",
+   opts:[["indep","Independent: different units in each group"],["paired","Paired: the same units twice or more"]]},
+  {key:"dv", title:"What type is the outcome?",
+   help:"The type of Y decides parametric, nonparametric or categorical tests.",
+   opts:[["interval","Interval / ratio, roughly normal errors"],["ordinal","Ordinal, or numerical but clearly not normal"],["cat2","Categorical, 2 categories (yes / no)"],["cat","Categorical, 3+ categories"]]},
+];
+const LABEL = {}; STEPS.forEach(s => s.opts.forEach(([v,l]) => LABEL[s.key+":"+v] = l));
+const PRESETS = [
+  ["Morale: head office vs branches", {ndv:"1",iv:"cat2",design:"indep",dv:"interval"}],
+  ["Morale before / after training", {ndv:"1",iv:"cat2",design:"paired",dv:"interval"}],
+  ["One Likert item by department", {ndv:"1",iv:"cat3",design:"indep",dv:"ordinal"}],
+  ["Leave (yes/no) by department", {ndv:"1",iv:"cat3",design:"indep",dv:"cat2"}],
+  ["Morale and management support", {ndv:"1",iv:"num1",design:"na",dv:"interval"}],
+  ["73 scale items: how many dimensions?", {ndv:"2+",iv:"none",design:"na",dv:"interval"}],
+];
+let S = {};
+
+function allowed(key){
+  if(key==="ndv") return ["1","2+","sets"];
+  if(key==="iv"){
+    if(!S.ndv) return [];
+    if(S.ndv==="1") return ["none","cat2","cat3","catmany","num1","mixed"];
+    if(S.ndv==="2+") return ["none","cat2","cat3","mixed"];
+    return ["none"];
+  }
+  if(key==="design"){
+    if(!S.iv) return [];
+    if(["cat2","cat3"].includes(S.iv) && S.ndv==="1") return ["indep","paired"];
+    if(["cat2","cat3"].includes(S.iv)) return ["indep"];
+    if(S.iv==="catmany") return ["indep"];
+    return [];
+  }
+  if(key==="dv"){
+    if(!S.iv || (needsDesign() && !S.design)) return [];
+    const pool = ["interval","ordinal","cat2","cat"];
+    return pool.filter(v => RULES[[S.ndv,S.iv,designKey(),v].join("|")]);
+  }
+}
+function needsDesign(){ return ["cat2","cat3","catmany"].includes(S.iv); }
+function designKey(){ return needsDesign() ? (S.design||"") : "na"; }
+
+function setVal(key,val){
+  S[key]=val;
+  const order=["ndv","iv","design","dv"]; const i=order.indexOf(key);
+  order.slice(i+1).forEach(k => delete S[k]);
+  // auto-fill forced single choices
+  if(allowed("iv").length===1 && !S.iv) S.iv=allowed("iv")[0];
+  if(S.iv && needsDesign() && allowed("design").length===1 && !S.design) S.design=allowed("design")[0];
+  if(S.iv && allowed("dv").length===1 && !S.dv) S.dv=allowed("dv")[0];
+  render();
+}
+
+function designFig(){
+  return `<div class="design">
+  <figure><svg viewBox="0 0 120 68"><g fill="#8a8a8a">${[10,22,30,40,48].map((y,i)=>`<circle cx="${25+(i%2)*6}" cy="${y}" r="3.2"/>`).join("")}</g>
+  <g fill="#5e5e5e">${[14,20,33,42,52].map((y,i)=>`<circle cx="${85+(i%2)*6}" cy="${y}" r="3.2"/>`).join("")}</g>
+  <text x="28" y="66" font-size="8" text-anchor="middle" fill="#4d4d4d">group A</text><text x="88" y="66" font-size="8" text-anchor="middle" fill="#4d4d4d">group B</text></svg>
+  <b>Independent</b>: each unit appears in one group only (e.g. head office vs branches).</figure>
+  <figure><svg viewBox="0 0 120 68"><g stroke="#b5b5b5" stroke-width="1">${[[12,8],[22,18],[30,24],[40,30],[48,44]].map(([a,b])=>`<line x1="28" y1="${a}" x2="88" y2="${b}"/>`).join("")}</g>
+  <g fill="#8a8a8a">${[12,22,30,40,48].map(y=>`<circle cx="28" cy="${y}" r="3.2"/>`).join("")}</g>
+  <g fill="#5e5e5e">${[8,18,24,30,44].map(y=>`<circle cx="88" cy="${y}" r="3.2"/>`).join("")}</g>
+  <text x="28" y="66" font-size="8" text-anchor="middle" fill="#4d4d4d">before</text><text x="88" y="66" font-size="8" text-anchor="middle" fill="#4d4d4d">after</text></svg>
+  <b>Paired</b>: the same units measured again; each value has a partner (e.g. before / after).</figure></div>`;
+}
+
+function renderSteps(){
+  const el=document.getElementById("steps"); let h="";
+  STEPS.forEach((st,i)=>{
+    const al=allowed(st.key); const active=al.length>0; const skipped = st.key==="design" && S.iv && !needsDesign();
+    h+=`<div class="step ${S[st.key]?"done":""} ${active?"":"off"}"><h2><span class="n">${i+1}</span>${st.title}</h2>`;
+    if(skipped){ h+=`<div class="help">Not needed: X does not form groups.</div></div>`; return; }
+    h+=`<div class="opts">`+st.opts.map(([v,l])=>`<button data-k="${st.key}" data-v="${v}" class="${S[st.key]===v?"on":""}" ${al.includes(v)?"":"disabled"}>${l}</button>`).join("")+`</div>`;
+    h+=`<div class="help">${st.help}</div>`;
+    if(st.key==="design") h+=designFig();
+    h+=`</div>`;
+  });
+  el.innerHTML=h;
+  el.querySelectorAll("button[data-k]").forEach(b=>b.onclick=()=>setVal(b.dataset.k,b.dataset.v));
+}
+
+function card(t){
+  const kind = t.kind;
+  return `<div class="result"><div class="tags"><span class="tag">${t.family}</span><span class="tag">${kind}</span></div>
+  <h3>${t.name}</h3><div class="q">${t.question}</div><div class="ex">Example: ${t.example}</div>
+  <div class="alt"><b>Counterpart:</b> ${t.counterpart}</div>
+  <div class="cmds">${["python","r","spss","stata","sas"].map(s=>`<div class="cmd ${s==="python"?"py":""}"><span class="sw">${s==="python"?"PYTHON · import scipy.stats as st, statsmodels.formula.api as smf":s.toUpperCase()}</span><code>${esc(t[s])}</code></div>`).join("")}</div></div>`;
+}
+function esc(s){return s.replace(/&/g,"&amp;").replace(/</g,"&lt;");}
+
+function renderResult(){
+  const p=document.getElementById("path"), r=document.getElementById("results");
+  const parts=["ndv","iv","design","dv"].filter(k=>S[k] && !(k==="design"&&!needsDesign())).map(k=>`<b>${LABEL[k+":"+S[k]]}</b>`);
+  p.innerHTML = parts.length? parts.join("  →  ") : "Start with step 1, or pick an example above.";
+  if(!S.dv){ r.innerHTML=`<div class="empty">The recommended technique appears here when the four steps are answered.</div>`; hilite([]); return; }
+  const ids = RULES[[S.ndv,S.iv,designKey(),S.dv].join("|")]||[];
+  if(!ids.length){ r.innerHTML=`<div class="warn">This combination is not in the UCLA table. Check the design with a statistician or simplify the outcome.</div>`; hilite([]); return;}
+  r.innerHTML = ids.map(id=>card(byId[id])).join("");
+  hilite(ids);
+}
+
+let FAM="All";
+function renderTable(hits=[]){
+  const fams=["All",...new Set(TESTS.map(t=>t.family))];
+  document.getElementById("filters").innerHTML=fams.map(f=>`<button class="${f===FAM?"on":""}" data-f="${f}">${f}</button>`).join("");
+  document.querySelectorAll("#filters button").forEach(b=>b.onclick=()=>{FAM=b.dataset.f; renderTable(hits);});
+  const rows=TESTS.filter(t=>FAM==="All"||t.family===FAM);
+  document.getElementById("allTable").innerHTML=`<tr><th>Technique</th><th>Family</th><th>Outcome (Y)</th><th>Independent variable (X)</th><th>Design</th><th>Type</th><th>Counterpart</th><th>Python</th><th>R</th><th>SPSS</th></tr>`+
+    rows.map(t=>`<tr class="${hits.includes(t.id)?"hit":""}"><td><b>${t.name}</b><br><span style="color:#5e5e5e">${t.question}</span></td><td>${t.family}</td><td>${t.n_dv} · ${t.dv}</td><td>${t.iv}</td><td>${t.design}</td><td>${t.kind}</td><td>${t.counterpart}</td><td><code>${esc(t.python)}</code></td><td><code>${esc(t.r)}</code></td><td><code>${esc(t.spss)}</code></td></tr>`).join("");
+}
+let HITS=[]; function hilite(ids){HITS=ids; renderTable(ids);}
+function render(){ renderSteps(); renderResult(); }
+
+document.getElementById("gloss").innerHTML=GLOSS.map(([a,b])=>`<div><b>${a}</b>${b}</div>`).join("");
+document.getElementById("presets").innerHTML=PRESETS.map(([l],i)=>`<button data-p="${i}">${l}</button>`).join(" ");
+document.querySelectorAll("#presets button").forEach(b=>b.onclick=()=>{S={...PRESETS[+b.dataset.p][1]}; if(S.design==="na") delete S.design; render();});
+document.getElementById("reset").onclick=()=>{S={}; render();};
+const tA=document.getElementById("tabAll"), tG=document.getElementById("tabGloss");
+tA.onclick=()=>{tA.classList.add("on");tG.classList.remove("on");allView.style.display="";glossView.style.display="none";};
+tG.onclick=()=>{tG.classList.add("on");tA.classList.remove("on");allView.style.display="none";glossView.style.display="";};
+const m=location.hash.match(/preset=(\d+)/); if(m&&PRESETS[+m[1]]){S={...PRESETS[+m[1]][1]}; if(S.design==="na") delete S.design;}
+render();
+</script>
+</body>
+</html>
